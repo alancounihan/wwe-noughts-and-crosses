@@ -7,396 +7,180 @@
   <script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;900&display=swap');
-
     *{margin:0;padding:0;box-sizing:border-box;}
-
     body{
       min-height:100vh;
       background:#0a0a0a;
-      background-image:
-        radial-gradient(ellipse at top,#1a0000 0%,#0a0a0a 60%),
+      background-image:radial-gradient(ellipse at top,#1a0000 0%,#0a0a0a 60%),
         url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
       font-family:'Nunito',sans-serif;
-      display:flex; flex-direction:column; align-items:center;
-      padding:16px; overflow-x:hidden;
-      color:#fff;
+      display:flex;flex-direction:column;align-items:center;
+      padding:16px;overflow-x:hidden;color:#fff;
     }
+    .screen{display:none;flex-direction:column;align-items:center;width:100%;max-width:860px;}
+    .screen.active{display:flex;}
+    .title-wrap{text-align:center;margin-bottom:14px;}
+    .title-wrap h1{font-family:'Bangers',cursive;font-size:clamp(2rem,7vw,3.8rem);letter-spacing:3px;color:#fff;text-shadow:0 0 20px #ff0000,3px 3px 0 #cc0000;line-height:1;}
+    .title-wrap .subtitle{font-family:'Bangers',cursive;font-size:clamp(0.95rem,3vw,1.5rem);color:#ffd700;letter-spacing:2px;text-shadow:1px 1px 0 #b8860b;}
 
-    /* ── SCREENS ── */
-    .screen{ display:none; flex-direction:column; align-items:center; width:100%; max-width:860px; }
-    .screen.active{ display:flex; }
+    /* ── MENU ── */
+    .menu-cards{display:flex;flex-direction:column;gap:14px;width:100%;max-width:400px;margin-top:10px;}
+    .menu-card{display:flex;align-items:center;gap:16px;padding:18px 24px;border-radius:18px;border:none;cursor:pointer;font-family:'Bangers',cursive;font-size:1.5rem;letter-spacing:2px;transition:all 0.2s;text-align:left;width:100%;}
+    .menu-card:hover{transform:scale(1.04);}
+    .menu-card:active{transform:scale(0.97);}
+    .menu-card.local{background:linear-gradient(135deg,#2a0000,#4a0000);border:3px solid #ff4444;box-shadow:0 4px 20px rgba(255,68,68,0.35);color:#fff;}
+    .menu-card.create{background:linear-gradient(135deg,#001830,#002a50);border:3px solid #3399ff;box-shadow:0 4px 20px rgba(51,153,255,0.35);color:#fff;}
+    .menu-card.join{background:linear-gradient(135deg,#1a1400,#3a2c00);border:3px solid #ffd700;box-shadow:0 4px 20px rgba(255,215,0,0.3);color:#fff;}
+    .menu-card .card-icon{font-size:2.2rem;flex-shrink:0;}
+    .menu-card .card-text{display:flex;flex-direction:column;}
+    .menu-card .card-label{font-size:1.4rem;line-height:1;}
+    .menu-card .card-desc{font-family:'Nunito',sans-serif;font-size:0.72rem;font-weight:700;opacity:0.7;letter-spacing:0;margin-top:2px;}
 
-    /* ── SHARED TITLE ── */
-    .title-wrap{ text-align:center; margin-bottom:14px; }
-    .title-wrap h1{
-      font-family:'Bangers',cursive;
-      font-size:clamp(2rem,7vw,3.8rem);
-      letter-spacing:3px; color:#fff;
-      text-shadow:0 0 20px #ff0000,3px 3px 0 #cc0000;
-      line-height:1;
-    }
-    .title-wrap .subtitle{
-      font-family:'Bangers',cursive;
-      font-size:clamp(0.95rem,3vw,1.5rem);
-      color:#ffd700; letter-spacing:2px;
-      text-shadow:1px 1px 0 #b8860b;
-    }
+    /* ── PICK SCREEN ── */
+    .pick-step-row{display:flex;gap:10px;margin-bottom:10px;}
+    .step-pill{font-family:'Bangers',cursive;font-size:1rem;letter-spacing:2px;padding:6px 18px;border-radius:30px;border:2px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.35);transition:all 0.3s;}
+    .step-pill.active{border-color:#ffd700;color:#ffd700;background:rgba(255,215,0,0.12);}
+    .era-tabs{display:flex;gap:8px;margin-bottom:12px;}
+    .era-tab{font-family:'Bangers',cursive;font-size:1.15rem;letter-spacing:2px;padding:10px 22px;border-radius:30px;border:2px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.55);cursor:pointer;transition:all 0.2s;}
+    .era-tab.active{background:rgba(255,215,0,0.15);border-color:#ffd700;color:#ffd700;}
+    .era-tab:hover:not(.active){background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.3);color:#fff;}
+    .wrestler-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:100%;max-width:500px;}
+    @media(max-width:480px){.wrestler-grid{grid-template-columns:repeat(2,1fr);}}
+    .wrestler-card{display:flex;flex-direction:column;align-items:center;padding:10px 6px;border-radius:14px;border:3px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);cursor:pointer;transition:all 0.2s;gap:4px;}
+    .wrestler-card:hover{transform:scale(1.06);border-color:rgba(255,255,255,0.3);background:rgba(255,255,255,0.09);}
+    .wrestler-card.selected{border-color:#ffd700;background:rgba(255,215,0,0.13);box-shadow:0 0 22px rgba(255,215,0,0.35);}
+    .wcard-portrait{width:72px;height:79px;border-radius:50%;overflow:hidden;}
+    .wcard-portrait svg{width:100%;height:100%;display:block;}
+    .wcard-name{font-family:'Bangers',cursive;font-size:0.92rem;letter-spacing:1px;text-align:center;color:#fff;line-height:1.1;}
 
-    /* ══════════════════════════════
-       MENU SCREEN
-    ══════════════════════════════ */
-    .menu-cards{
-      display:flex; flex-direction:column; gap:14px;
-      width:100%; max-width:400px; margin-top:10px;
-    }
-    .menu-card{
-      display:flex; align-items:center; gap:16px;
-      padding:18px 24px; border-radius:18px; border:none;
-      cursor:pointer; font-family:'Bangers',cursive;
-      font-size:1.5rem; letter-spacing:2px;
-      transition:all 0.2s; text-align:left; width:100%;
-    }
-    .menu-card:hover{ transform:scale(1.04); }
-    .menu-card:active{ transform:scale(0.97); }
-    .menu-card.local{
-      background:linear-gradient(135deg,#2a0000,#4a0000);
-      border:3px solid #ff4444;
-      box-shadow:0 4px 20px rgba(255,68,68,0.35);
-      color:#fff;
-    }
-    .menu-card.create{
-      background:linear-gradient(135deg,#001830,#002a50);
-      border:3px solid #3399ff;
-      box-shadow:0 4px 20px rgba(51,153,255,0.35);
-      color:#fff;
-    }
-    .menu-card.join{
-      background:linear-gradient(135deg,#1a1400,#3a2c00);
-      border:3px solid #ffd700;
-      box-shadow:0 4px 20px rgba(255,215,0,0.3);
-      color:#fff;
-    }
-    .menu-card .card-icon{ font-size:2.2rem; flex-shrink:0; }
-    .menu-card .card-text{ display:flex; flex-direction:column; }
-    .menu-card .card-label{ font-size:1.4rem; line-height:1; }
-    .menu-card .card-desc{ font-family:'Nunito',sans-serif; font-size:0.72rem; font-weight:700; opacity:0.7; letter-spacing:0; margin-top:2px; }
+    /* ── CREATE / JOIN ── */
+    .create-box,.join-box{background:rgba(255,255,255,0.05);border:2px solid rgba(255,255,255,0.1);border-radius:22px;padding:30px 28px;text-align:center;width:100%;max-width:420px;margin-top:10px;}
+    .create-label,.join-label{font-family:'Bangers',cursive;font-size:1.1rem;letter-spacing:2px;color:rgba(255,255,255,0.55);margin-bottom:14px;}
+    .code-display{display:flex;gap:8px;justify-content:center;margin-bottom:18px;}
+    .code-char{width:48px;height:58px;background:rgba(255,255,255,0.08);border:2px solid rgba(255,255,255,0.2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:'Bangers',cursive;font-size:2rem;color:#ffd700;transition:all 0.3s;}
+    .code-char.filled{border-color:#ffd700;background:rgba(255,215,0,0.12);box-shadow:0 0 14px rgba(255,215,0,0.3);}
+    .copy-btn{font-family:'Bangers',cursive;font-size:1rem;letter-spacing:2px;padding:9px 22px;border-radius:30px;border:2px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);color:#fff;cursor:pointer;transition:all 0.2s;margin-bottom:20px;}
+    .copy-btn:hover{background:rgba(255,255,255,0.15);}
+    .create-status{font-family:'Bangers',cursive;font-size:1.1rem;letter-spacing:1px;color:#aaa;margin-bottom:20px;min-height:1.8rem;}
+    .pulse-ring{width:60px;height:60px;border-radius:50%;border:3px solid #3399ff;margin:0 auto 16px;animation:pulseRing 1.4s ease-out infinite;display:none;}
+    .pulse-ring.show{display:block;}
+    @keyframes pulseRing{0%{transform:scale(0.8);opacity:1;}100%{transform:scale(1.8);opacity:0;}}
+    .code-input-wrap{display:flex;gap:6px;justify-content:center;margin-bottom:18px;}
+    .code-letter{width:44px;height:56px;background:rgba(255,255,255,0.06);border:2px solid rgba(255,255,255,0.2);border-radius:10px;font-family:'Bangers',cursive;font-size:1.8rem;color:#ffd700;text-align:center;outline:none;text-transform:uppercase;transition:border-color 0.2s;caret-color:#ffd700;}
+    .code-letter:focus{border-color:#ffd700;background:rgba(255,215,0,0.1);}
+    .join-status{font-family:'Bangers',cursive;font-size:1rem;letter-spacing:1px;color:#aaa;margin-bottom:16px;min-height:1.6rem;}
 
-    /* ══════════════════════════════
-       CREATE SCREEN
-    ══════════════════════════════ */
-    .create-box{
-      background:rgba(255,255,255,0.05);
-      border:2px solid rgba(255,255,255,0.1);
-      border-radius:22px; padding:30px 28px;
-      text-align:center; width:100%; max-width:420px;
-      margin-top:10px;
-    }
-    .create-label{
-      font-family:'Bangers',cursive; font-size:1.1rem;
-      letter-spacing:2px; color:rgba(255,255,255,0.55);
-      margin-bottom:14px;
-    }
-    .code-display{
-      display:flex; gap:8px; justify-content:center;
-      margin-bottom:18px;
-    }
-    .code-char{
-      width:48px; height:58px;
-      background:rgba(255,255,255,0.08);
-      border:2px solid rgba(255,255,255,0.2);
-      border-radius:12px;
-      display:flex; align-items:center; justify-content:center;
-      font-family:'Bangers',cursive; font-size:2rem;
-      color:#ffd700; letter-spacing:0;
-      transition:all 0.3s;
-    }
-    .code-char.filled{
-      border-color:#ffd700;
-      background:rgba(255,215,0,0.12);
-      box-shadow:0 0 14px rgba(255,215,0,0.3);
-    }
-    .copy-btn{
-      font-family:'Bangers',cursive; font-size:1rem;
-      letter-spacing:2px; padding:9px 22px;
-      border-radius:30px; border:2px solid rgba(255,255,255,0.2);
-      background:rgba(255,255,255,0.08); color:#fff;
-      cursor:pointer; transition:all 0.2s; margin-bottom:20px;
-    }
-    .copy-btn:hover{ background:rgba(255,255,255,0.15); }
+    /* ── BUTTONS ── */
+    .btn{font-family:'Bangers',cursive;font-size:1.1rem;letter-spacing:2px;padding:10px 24px;border-radius:40px;border:none;cursor:pointer;transition:all 0.2s;}
+    .btn:hover{transform:scale(1.05);}
+    .btn:active{transform:scale(0.97);}
+    .btn:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
+    .btn-red{background:linear-gradient(135deg,#ff4444,#cc0000);color:#fff;box-shadow:0 4px 14px rgba(255,68,68,0.4);}
+    .btn-blue{background:linear-gradient(135deg,#3399ff,#0055cc);color:#fff;box-shadow:0 4px 14px rgba(51,153,255,0.4);}
+    .btn-gold{background:linear-gradient(135deg,#ffd700,#ff8c00);color:#111;box-shadow:0 4px 14px rgba(255,215,0,0.4);}
+    .btn-ghost{background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.15);}
+    .btn-back{background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.6);border:1px solid rgba(255,255,255,0.12);font-size:0.9rem;padding:8px 18px;margin-top:10px;}
 
-    .create-status{
-      font-family:'Bangers',cursive; font-size:1.1rem;
-      letter-spacing:1px; color:#aaa; margin-bottom:20px;
-      min-height:1.8rem;
-    }
-    .pulse-ring{
-      width:60px; height:60px; border-radius:50%;
-      border:3px solid #3399ff;
-      margin:0 auto 16px;
-      animation:pulseRing 1.4s ease-out infinite;
-      display:none;
-    }
-    .pulse-ring.show{ display:block; }
-    @keyframes pulseRing{
-      0%  { transform:scale(0.8); opacity:1; }
-      100%{ transform:scale(1.8); opacity:0; }
-    }
-
-    /* ══════════════════════════════
-       JOIN SCREEN
-    ══════════════════════════════ */
-    .join-box{
-      background:rgba(255,255,255,0.05);
-      border:2px solid rgba(255,255,255,0.1);
-      border-radius:22px; padding:30px 28px;
-      text-align:center; width:100%; max-width:420px;
-      margin-top:10px;
-    }
-    .join-label{
-      font-family:'Bangers',cursive; font-size:1.1rem;
-      letter-spacing:2px; color:rgba(255,255,255,0.55);
-      margin-bottom:14px;
-    }
-    .code-input-wrap{ display:flex; gap:6px; justify-content:center; margin-bottom:18px; }
-    .code-letter{
-      width:44px; height:56px;
-      background:rgba(255,255,255,0.06);
-      border:2px solid rgba(255,255,255,0.2);
-      border-radius:10px;
-      font-family:'Bangers',cursive; font-size:1.8rem;
-      color:#ffd700; text-align:center;
-      outline:none; text-transform:uppercase;
-      transition:border-color 0.2s;
-      caret-color:#ffd700;
-    }
-    .code-letter:focus{ border-color:#ffd700; background:rgba(255,215,0,0.1); }
-    .join-status{
-      font-family:'Bangers',cursive; font-size:1rem;
-      letter-spacing:1px; color:#aaa;
-      margin-bottom:16px; min-height:1.6rem;
-    }
-
-    /* ══════════════════════════════
-       SHARED BUTTON STYLES
-    ══════════════════════════════ */
-    .btn{
-      font-family:'Bangers',cursive; font-size:1.1rem;
-      letter-spacing:2px; padding:10px 24px;
-      border-radius:40px; border:none;
-      cursor:pointer; transition:all 0.2s;
-    }
-    .btn:hover { transform:scale(1.05); }
-    .btn:active{ transform:scale(0.97); }
-    .btn:disabled{ opacity:0.5; cursor:not-allowed; transform:none; }
-    .btn-red   { background:linear-gradient(135deg,#ff4444,#cc0000); color:#fff; box-shadow:0 4px 14px rgba(255,68,68,0.4); }
-    .btn-blue  { background:linear-gradient(135deg,#3399ff,#0055cc); color:#fff; box-shadow:0 4px 14px rgba(51,153,255,0.4); }
-    .btn-gold  { background:linear-gradient(135deg,#ffd700,#ff8c00); color:#111; box-shadow:0 4px 14px rgba(255,215,0,0.4); }
-    .btn-ghost { background:rgba(255,255,255,0.08); color:rgba(255,255,255,0.7); border:1px solid rgba(255,255,255,0.15); }
-    .btn-back  { background:rgba(255,255,255,0.08); color:rgba(255,255,255,0.6); border:1px solid rgba(255,255,255,0.12); font-size:0.9rem; padding:8px 18px; margin-top:10px; }
-
-    /* ══════════════════════════════
-       GAME SCREEN
-    ══════════════════════════════ */
-
-    /* Online badge */
-    .online-badge{
-      display:none;
-      align-items:center; gap:8px;
-      font-family:'Bangers',cursive; font-size:1rem;
-      letter-spacing:2px; padding:7px 18px;
-      border-radius:30px; border:2px solid #aaa;
-      background:rgba(255,255,255,0.06);
-      margin-bottom:10px;
-    }
-    .online-badge.show{ display:flex; }
-    .conn-dot{
-      width:10px; height:10px; border-radius:50%;
-      background:#00cc44;
-      box-shadow:0 0 8px #00cc44;
-      animation:blink 2s ease-in-out infinite;
-    }
-    .conn-dot.offline{ background:#ff4444; box-shadow:0 0 8px #ff4444; animation:none; }
-    @keyframes blink{ 0%,100%{ opacity:1; } 50%{ opacity:0.4; } }
-
-    /* Scoreboard */
-    .scoreboard{
-      display:flex; gap:20px; margin:6px 0 12px;
-      background:rgba(255,255,255,0.05);
-      border:2px solid rgba(255,255,255,0.1);
-      border-radius:16px; padding:10px 24px;
-    }
-    .score-item{ text-align:center; }
-    .score-item .s-name{ font-size:0.72rem; text-transform:uppercase; letter-spacing:1px; color:rgba(255,255,255,0.55); }
-    .score-item .s-val { font-family:'Bangers',cursive; font-size:2rem; line-height:1; }
-    .score-item.randy .s-val{ color:#ff4444; }
-    .score-item.draws .s-val{ color:#aaa; }
-    .score-item.roman .s-val{ color:#3399ff; }
-    .score-divider{ width:1px; background:rgba(255,255,255,0.15); }
-
-    /* Arena */
-    .arena{ display:flex; align-items:center; gap:16px; width:100%; }
-
-    /* Player cards */
-    .player-card{
-      flex:0 0 130px;
-      display:flex; flex-direction:column; align-items:center; gap:6px;
-      padding:12px 8px; border-radius:16px;
-      border:3px solid transparent; transition:all 0.35s ease;
-    }
-    .player-card.active-card{ transform:scale(1.06); }
-    .player-card.randy-card{ background:linear-gradient(135deg,#1a0000,#2d0000); border-color:#ff4444; box-shadow:0 0 30px rgba(255,68,68,0.3); }
-    .player-card.roman-card{ background:linear-gradient(135deg,#00091a,#001830); border-color:#3399ff; box-shadow:0 0 30px rgba(51,153,255,0.3); }
-    .player-card.randy-card.active-card{ box-shadow:0 0 50px rgba(255,68,68,0.7),inset 0 0 20px rgba(255,68,68,0.1); }
-    .player-card.roman-card.active-card{ box-shadow:0 0 50px rgba(51,153,255,0.7),inset 0 0 20px rgba(51,153,255,0.1); }
-
-    .card-portrait{
-      width:76px; height:76px; border-radius:50%; overflow:hidden;
-      border:3px solid rgba(255,255,255,0.15);
-    }
-    .card-portrait svg{ width:100%; height:100%; display:block; }
-    .player-card.active-card .card-portrait{ animation:bounce 0.6s infinite alternate; }
-    @keyframes bounce{ from{transform:translateY(0) scale(1);} to{transform:translateY(-6px) scale(1.1);} }
-
-    .player-name{ font-family:'Bangers',cursive; font-size:0.95rem; letter-spacing:1px; text-align:center; line-height:1.1; }
-    .randy-card .player-name{ color:#ff6666; }
-    .roman-card .player-name{ color:#66b3ff; }
-
-    .player-symbol{
-      font-family:'Bangers',cursive; font-size:1.4rem; line-height:1;
-      width:46px; height:30px; display:flex; align-items:center; justify-content:center; border-radius:8px;
-    }
-    .randy-card .player-symbol{ color:#ff4444; background:rgba(255,68,68,0.15); border:2px solid rgba(255,68,68,0.4); }
-    .roman-card .player-symbol{ color:#3399ff; background:rgba(51,153,255,0.15); border:2px solid rgba(51,153,255,0.4); }
-
-    .turn-badge{
-      font-size:0.6rem; font-weight:900; text-transform:uppercase; letter-spacing:1px;
-      padding:3px 8px; border-radius:20px; opacity:0; transition:opacity 0.3s;
-    }
-    .player-card.active-card .turn-badge{ opacity:1; }
-    .randy-card .turn-badge{ background:#ff4444; color:#fff; }
-    .roman-card .turn-badge{ background:#3399ff; color:#fff; }
-
-    /* You tag for online mode */
-    .you-tag{
-      font-size:0.6rem; font-weight:900; text-transform:uppercase; letter-spacing:1px;
-      padding:2px 8px; border-radius:20px; opacity:0;
-    }
-    .you-tag.show{ opacity:1; }
-    .randy-card .you-tag{ background:rgba(255,68,68,0.3); color:#ff9999; border:1px solid #ff4444; }
-    .roman-card .you-tag{ background:rgba(51,153,255,0.3); color:#99ccff; border:1px solid #3399ff; }
-
-    /* Board wrap */
-    .board-wrap{ flex:1; display:flex; flex-direction:column; align-items:center; gap:10px; }
-
-    .status-msg{
-      font-family:'Bangers',cursive; font-size:clamp(1rem,2.8vw,1.4rem);
-      letter-spacing:2px; color:#ffd700;
-      text-shadow:1px 1px 0 #b8860b; text-align:center; min-height:2rem;
-    }
-
-    .board{
-      display:grid; grid-template-columns:repeat(3,1fr); gap:8px;
-      padding:12px; background:rgba(255,255,255,0.04);
-      border-radius:18px; border:2px solid rgba(255,255,255,0.08);
-    }
-    .cell{
-      width:clamp(82px,18vw,112px); height:clamp(82px,18vw,112px);
-      background:rgba(255,255,255,0.06); border:2px solid rgba(255,255,255,0.12);
-      border-radius:14px; display:flex; align-items:center; justify-content:center;
-      cursor:pointer; transition:all 0.2s ease; position:relative; overflow:hidden; user-select:none;
-    }
-    .cell::before{
-      content:''; position:absolute; inset:0;
-      background:radial-gradient(circle,rgba(255,255,255,0.08) 0%,transparent 70%);
-      opacity:0; transition:opacity 0.2s;
-    }
-    .cell:hover:not(.taken){ transform:scale(1.06); border-color:rgba(255,255,255,0.3); }
-    .cell:hover:not(.taken)::before{ opacity:1; }
-    .cell.taken{ cursor:default; }
-    .cell.randy-cell{ background:rgba(255,68,68,0.12); border-color:rgba(255,68,68,0.5); box-shadow:inset 0 0 15px rgba(255,68,68,0.15); }
-    .cell.roman-cell{ background:rgba(51,153,255,0.12); border-color:rgba(51,153,255,0.5); box-shadow:inset 0 0 15px rgba(51,153,255,0.15); }
-    .cell.winning-cell{ animation:winPulse 0.5s ease infinite alternate; }
-    @keyframes winPulse{ from{transform:scale(1);box-shadow:0 0 10px rgba(255,215,0,0.4);} to{transform:scale(1.08);box-shadow:0 0 30px rgba(255,215,0,0.9);} }
-
-    /* Tile portrait */
-    .tile-svg{ width:88%; height:88%; animation:popIn 0.28s cubic-bezier(0.175,0.885,0.32,1.275); display:block; }
-    @keyframes popIn{ from{transform:scale(0) rotate(-20deg);opacity:0;} to{transform:scale(1) rotate(0deg);opacity:1;} }
-
-    /* Buttons row */
-    .btn-row{ display:flex; gap:8px; margin-top:4px; flex-wrap:wrap; justify-content:center; }
-
-    /* ── OVERLAY ── */
-    .overlay{
-      display:none; position:fixed; inset:0;
-      background:rgba(0,0,0,0.78); z-index:100;
-      align-items:center; justify-content:center;
-    }
-    .overlay.show{ display:flex; }
-    .overlay-box{
-      background:linear-gradient(135deg,#1a1a1a,#0d0d0d);
-      border-radius:24px; padding:34px 44px; text-align:center;
-      border:3px solid #ffd700; box-shadow:0 0 60px rgba(255,215,0,0.3);
-      animation:slideUp 0.4s cubic-bezier(0.175,0.885,0.32,1.275);
-      max-width:90vw;
-    }
-    @keyframes slideUp{ from{transform:translateY(60px) scale(0.8);opacity:0;} to{transform:translateY(0) scale(1);opacity:1;} }
-    .overlay-portrait{ width:100px; height:100px; border-radius:50%; overflow:hidden; margin:0 auto 10px; border:4px solid #ffd700; box-shadow:0 0 28px rgba(255,215,0,0.5); }
-    .overlay-portrait svg{ width:100%; height:100%; display:block; }
-    .overlay-title{ font-family:'Bangers',cursive; font-size:clamp(2rem,8vw,3.2rem); letter-spacing:3px; margin-bottom:4px; }
-    .overlay-sub  { font-size:0.95rem; color:rgba(255,255,255,0.65); margin-bottom:22px; }
-    .belt-badge{
-      display:inline-block; font-family:'Bangers',cursive;
-      font-size:0.82rem; letter-spacing:2px; padding:4px 14px;
-      border-radius:20px; background:linear-gradient(135deg,#ffd700,#ff8c00);
-      color:#111; box-shadow:0 2px 10px rgba(255,215,0,0.5); margin-bottom:10px;
-    }
-
-    /* Confetti */
-    .confetti-wrap{ position:fixed; inset:0; pointer-events:none; z-index:99; overflow:hidden; }
-    .confetti-piece{ position:absolute; top:-20px; border-radius:2px; animation:confettiFall linear forwards; }
-    @keyframes confettiFall{ 0%{transform:translateY(0) rotate(0deg);opacity:1;} 100%{transform:translateY(110vh) rotate(720deg);opacity:0;} }
-
-    footer{ margin-top:18px; font-size:0.68rem; color:rgba(255,255,255,0.2); letter-spacing:1px; text-align:center; }
-
+    /* ── GAME SCREEN ── */
+    .online-badge{display:none;align-items:center;gap:8px;font-family:'Bangers',cursive;font-size:1rem;letter-spacing:2px;padding:7px 18px;border-radius:30px;border:2px solid #aaa;background:rgba(255,255,255,0.06);margin-bottom:10px;}
+    .online-badge.show{display:flex;}
+    .conn-dot{width:10px;height:10px;border-radius:50%;background:#00cc44;box-shadow:0 0 8px #00cc44;animation:blink 2s ease-in-out infinite;}
+    .conn-dot.offline{background:#ff4444;box-shadow:0 0 8px #ff4444;animation:none;}
+    @keyframes blink{0%,100%{opacity:1;}50%{opacity:0.4;}}
+    .scoreboard{display:flex;gap:20px;margin:6px 0 12px;background:rgba(255,255,255,0.05);border:2px solid rgba(255,255,255,0.1);border-radius:16px;padding:10px 24px;}
+    .score-item{text-align:center;}
+    .score-item .s-name{font-size:0.72rem;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,0.55);}
+    .score-item .s-val{font-family:'Bangers',cursive;font-size:2rem;line-height:1;}
+    .score-item.p1-score .s-val{color:var(--p1-color,#ff4444);}
+    .score-item.draws .s-val{color:#aaa;}
+    .score-item.p2-score .s-val{color:var(--p2-color,#3399ff);}
+    .score-divider{width:1px;background:rgba(255,255,255,0.15);}
+    .arena{display:flex;align-items:center;gap:16px;width:100%;}
+    .player-card{flex:0 0 130px;display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 8px;border-radius:16px;border:3px solid transparent;transition:all 0.35s ease;}
+    .player-card.active-card{transform:scale(1.06);}
+    .p1-card{background:linear-gradient(135deg,#1a0000,#2d0000);border-color:var(--p1-color,#ff4444);box-shadow:0 0 30px rgba(var(--p1-rgb,255,68,68),0.3);}
+    .p2-card{background:linear-gradient(135deg,#00091a,#001830);border-color:var(--p2-color,#3399ff);box-shadow:0 0 30px rgba(var(--p2-rgb,51,153,255),0.3);}
+    .p1-card.active-card{box-shadow:0 0 50px rgba(var(--p1-rgb,255,68,68),0.7),inset 0 0 20px rgba(var(--p1-rgb,255,68,68),0.1);}
+    .p2-card.active-card{box-shadow:0 0 50px rgba(var(--p2-rgb,51,153,255),0.7),inset 0 0 20px rgba(var(--p2-rgb,51,153,255),0.1);}
+    .card-portrait{width:76px;height:76px;border-radius:50%;overflow:hidden;border:3px solid rgba(255,255,255,0.15);}
+    .card-portrait svg{width:100%;height:100%;display:block;}
+    .player-card.active-card .card-portrait{animation:bounce 0.6s infinite alternate;}
+    @keyframes bounce{from{transform:translateY(0) scale(1);}to{transform:translateY(-6px) scale(1.1);}}
+    .player-name{font-family:'Bangers',cursive;font-size:0.95rem;letter-spacing:1px;text-align:center;line-height:1.1;}
+    .p1-card .player-name{color:var(--p1-color,#ff4444);}
+    .p2-card .player-name{color:var(--p2-color,#3399ff);}
+    .player-symbol{font-family:'Bangers',cursive;font-size:1.2rem;line-height:1;min-width:46px;height:30px;display:flex;align-items:center;justify-content:center;border-radius:8px;padding:0 6px;}
+    .p1-card .player-symbol{color:var(--p1-color,#ff4444);background:rgba(var(--p1-rgb,255,68,68),0.15);border:2px solid rgba(var(--p1-rgb,255,68,68),0.4);}
+    .p2-card .player-symbol{color:var(--p2-color,#3399ff);background:rgba(var(--p2-rgb,51,153,255),0.15);border:2px solid rgba(var(--p2-rgb,51,153,255),0.4);}
+    .turn-badge{font-size:0.6rem;font-weight:900;text-transform:uppercase;letter-spacing:1px;padding:3px 8px;border-radius:20px;opacity:0;transition:opacity 0.3s;}
+    .player-card.active-card .turn-badge{opacity:1;}
+    .p1-card .turn-badge{background:var(--p1-color,#ff4444);color:#fff;}
+    .p2-card .turn-badge{background:var(--p2-color,#3399ff);color:#fff;}
+    .you-tag{font-size:0.6rem;font-weight:900;text-transform:uppercase;letter-spacing:1px;padding:2px 8px;border-radius:20px;opacity:0;}
+    .you-tag.show{opacity:1;}
+    .p1-card .you-tag{background:rgba(var(--p1-rgb,255,68,68),0.3);color:var(--p1-color,#ff4444);border:1px solid var(--p1-color,#ff4444);}
+    .p2-card .you-tag{background:rgba(var(--p2-rgb,51,153,255),0.3);color:var(--p2-color,#3399ff);border:1px solid var(--p2-color,#3399ff);}
+    .board-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:10px;}
+    .status-msg{font-family:'Bangers',cursive;font-size:clamp(1rem,2.8vw,1.4rem);letter-spacing:2px;color:#ffd700;text-shadow:1px 1px 0 #b8860b;text-align:center;min-height:2rem;}
+    .board{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px;background:rgba(255,255,255,0.04);border-radius:18px;border:2px solid rgba(255,255,255,0.08);}
+    .cell{width:clamp(82px,18vw,112px);height:clamp(82px,18vw,112px);background:rgba(255,255,255,0.06);border:2px solid rgba(255,255,255,0.12);border-radius:14px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s ease;position:relative;overflow:hidden;user-select:none;}
+    .cell::before{content:'';position:absolute;inset:0;background:radial-gradient(circle,rgba(255,255,255,0.08) 0%,transparent 70%);opacity:0;transition:opacity 0.2s;}
+    .cell:hover:not(.taken){transform:scale(1.06);border-color:rgba(255,255,255,0.3);}
+    .cell:hover:not(.taken)::before{opacity:1;}
+    .cell.taken{cursor:default;}
+    .cell.p1-cell{background:rgba(var(--p1-rgb,255,68,68),0.12);border-color:rgba(var(--p1-rgb,255,68,68),0.5);box-shadow:inset 0 0 15px rgba(var(--p1-rgb,255,68,68),0.15);}
+    .cell.p2-cell{background:rgba(var(--p2-rgb,51,153,255),0.12);border-color:rgba(var(--p2-rgb,51,153,255),0.5);box-shadow:inset 0 0 15px rgba(var(--p2-rgb,51,153,255),0.15);}
+    .cell.winning-cell{animation:winPulse 0.5s ease infinite alternate;}
+    @keyframes winPulse{from{transform:scale(1);box-shadow:0 0 10px rgba(255,215,0,0.4);}to{transform:scale(1.08);box-shadow:0 0 30px rgba(255,215,0,0.9);}}
+    .tile-svg{width:88%;height:88%;animation:popIn 0.28s cubic-bezier(0.175,0.885,0.32,1.275);display:block;}
+    @keyframes popIn{from{transform:scale(0) rotate(-20deg);opacity:0;}to{transform:scale(1) rotate(0deg);opacity:1;}}
+    .btn-row{display:flex;gap:8px;margin-top:4px;flex-wrap:wrap;justify-content:center;}
+    .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.78);z-index:100;align-items:center;justify-content:center;}
+    .overlay.show{display:flex;}
+    .overlay-box{background:linear-gradient(135deg,#1a1a1a,#0d0d0d);border-radius:24px;padding:34px 44px;text-align:center;border:3px solid #ffd700;box-shadow:0 0 60px rgba(255,215,0,0.3);animation:slideUp 0.4s cubic-bezier(0.175,0.885,0.32,1.275);max-width:90vw;}
+    @keyframes slideUp{from{transform:translateY(60px) scale(0.8);opacity:0;}to{transform:translateY(0) scale(1);opacity:1;}}
+    .overlay-portrait{width:100px;height:100px;border-radius:50%;overflow:hidden;margin:0 auto 10px;border:4px solid #ffd700;box-shadow:0 0 28px rgba(255,215,0,0.5);}
+    .overlay-portrait svg{width:100%;height:100%;display:block;}
+    .overlay-title{font-family:'Bangers',cursive;font-size:clamp(2rem,8vw,3.2rem);letter-spacing:3px;margin-bottom:4px;}
+    .overlay-sub{font-size:0.95rem;color:rgba(255,255,255,0.65);margin-bottom:22px;}
+    .belt-badge{display:inline-block;font-family:'Bangers',cursive;font-size:0.82rem;letter-spacing:2px;padding:4px 14px;border-radius:20px;background:linear-gradient(135deg,#ffd700,#ff8c00);color:#111;box-shadow:0 2px 10px rgba(255,215,0,0.5);margin-bottom:10px;}
+    .confetti-wrap{position:fixed;inset:0;pointer-events:none;z-index:99;overflow:hidden;}
+    .confetti-piece{position:absolute;top:-20px;border-radius:2px;animation:confettiFall linear forwards;}
+    @keyframes confettiFall{0%{transform:translateY(0) rotate(0deg);opacity:1;}100%{transform:translateY(110vh) rotate(720deg);opacity:0;}}
+    footer{margin-top:18px;font-size:0.68rem;color:rgba(255,255,255,0.2);letter-spacing:1px;text-align:center;}
     @media(max-width:540px){
-      .arena{ flex-direction:column; gap:6px; }
-      .player-card{ flex-direction:row; flex:none; width:100%; max-width:340px; padding:8px 14px; gap:10px; }
-      .card-portrait{ width:56px; height:56px; }
-      .player-name{ font-size:0.82rem; }
+      .arena{flex-direction:column;gap:6px;}
+      .player-card{flex-direction:row;flex:none;width:100%;max-width:340px;padding:8px 14px;gap:10px;}
+      .card-portrait{width:56px;height:56px;}
+      .player-name{font-size:0.82rem;}
     }
   </style>
 </head>
 <body>
-
 <div class="confetti-wrap" id="confettiWrap"></div>
 
-<!-- ══════════════════════════════
-     MENU SCREEN
-══════════════════════════════ -->
+<!-- ══ MENU ══ -->
 <div class="screen active" id="screenMenu">
   <div class="title-wrap">
     <h1>🏆 WWE NOUGHTS & CROSSES 🏆</h1>
-    <div class="subtitle">Randy Orton vs Roman Reigns</div>
+    <div class="subtitle">PICK YOUR LEGEND!</div>
   </div>
-
   <div class="menu-cards">
-    <button class="menu-card local" onclick="startLocal()">
+    <button class="menu-card local" onclick="goPickWrestler('local')">
       <div class="card-icon">🎮</div>
       <div class="card-text">
         <div class="card-label">SAME SCREEN</div>
         <div class="card-desc">Two players on this device</div>
       </div>
     </button>
-
-    <button class="menu-card create" onclick="showCreate()">
+    <button class="menu-card create" onclick="goPickWrestler('create')">
       <div class="card-icon">📱</div>
       <div class="card-text">
         <div class="card-label">CREATE GAME</div>
         <div class="card-desc">Get a code &amp; invite a friend on another tablet</div>
       </div>
     </button>
-
-    <button class="menu-card join" onclick="showJoin()">
+    <button class="menu-card join" onclick="goPickWrestler('join')">
       <div class="card-icon">🔗</div>
       <div class="card-text">
         <div class="card-label">JOIN GAME</div>
@@ -406,42 +190,50 @@
   </div>
 </div>
 
-<!-- ══════════════════════════════
-     CREATE SCREEN
-══════════════════════════════ -->
+<!-- ══ PICK SCREEN ══ -->
+<div class="screen" id="screenPick">
+  <div class="title-wrap">
+    <h1>🏆 WWE NOUGHTS & CROSSES 🏆</h1>
+    <div class="subtitle" id="pickSubtitle">PICK YOUR WRESTLER!</div>
+  </div>
+  <div class="pick-step-row" id="pickStepRow">
+    <div class="step-pill active" id="stepP1">⚡ PLAYER 1</div>
+    <div class="step-pill" id="stepP2">💥 PLAYER 2</div>
+  </div>
+  <div class="era-tabs">
+    <button class="era-tab active" data-era="current" onclick="setEra('current')">💥 CURRENT ERA</button>
+    <button class="era-tab" data-era="classic" onclick="setEra('classic')">⭐ CLASSIC ERA</button>
+  </div>
+  <div class="wrestler-grid" id="wrestlerGrid"></div>
+  <button class="btn btn-ghost btn-back" onclick="cancelAndBack()">← Back to Menu</button>
+</div>
+
+<!-- ══ CREATE ══ -->
 <div class="screen" id="screenCreate">
   <div class="title-wrap">
     <h1>🏆 WWE NOUGHTS & CROSSES 🏆</h1>
     <div class="subtitle">Create Online Game</div>
   </div>
-
   <div class="create-box">
     <div class="create-label">SHARE THIS CODE WITH YOUR FRIEND 👇</div>
     <div class="code-display" id="codeDisplay">
-      <div class="code-char" id="cc0">-</div>
-      <div class="code-char" id="cc1">-</div>
-      <div class="code-char" id="cc2">-</div>
-      <div class="code-char" id="cc3">-</div>
-      <div class="code-char" id="cc4">-</div>
-      <div class="code-char" id="cc5">-</div>
+      <div class="code-char" id="cc0">-</div><div class="code-char" id="cc1">-</div>
+      <div class="code-char" id="cc2">-</div><div class="code-char" id="cc3">-</div>
+      <div class="code-char" id="cc4">-</div><div class="code-char" id="cc5">-</div>
     </div>
     <button class="copy-btn" onclick="copyCode()">📋 COPY CODE</button>
     <div class="pulse-ring show" id="pulseRing"></div>
     <div class="create-status" id="createStatus">⏳ Getting your game code...</div>
   </div>
-
   <button class="btn btn-ghost btn-back" onclick="cancelAndBack()">← Back to Menu</button>
 </div>
 
-<!-- ══════════════════════════════
-     JOIN SCREEN
-══════════════════════════════ -->
+<!-- ══ JOIN ══ -->
 <div class="screen" id="screenJoin">
   <div class="title-wrap">
     <h1>🏆 WWE NOUGHTS & CROSSES 🏆</h1>
     <div class="subtitle">Join Online Game</div>
   </div>
-
   <div class="join-box">
     <div class="join-label">TYPE YOUR FRIEND'S CODE 👇</div>
     <div class="code-input-wrap" id="codeInputWrap">
@@ -455,64 +247,51 @@
     <div class="join-status" id="joinStatus"></div>
     <button class="btn btn-gold" id="joinBtn" onclick="joinGame()" style="font-size:1.4rem;padding:12px 40px;" disabled>JOIN!</button>
   </div>
-
   <button class="btn btn-ghost btn-back" onclick="cancelAndBack()">← Back to Menu</button>
 </div>
 
-<!-- ══════════════════════════════
-     GAME SCREEN
-══════════════════════════════ -->
+<!-- ══ GAME ══ -->
 <div class="screen" id="screenGame">
   <div class="title-wrap" style="margin-bottom:6px">
     <h1>🏆 WWE NOUGHTS & CROSSES 🏆</h1>
   </div>
-
-  <!-- Online badge -->
   <div class="online-badge" id="onlineBadge">
     <div class="conn-dot" id="connDot"></div>
-    <span id="onlineBadgeText">YOU ARE: RANDY ORTON</span>
+    <span id="onlineBadgeText">ONLINE</span>
   </div>
-
-  <!-- Scoreboard -->
   <div class="scoreboard">
-    <div class="score-item randy"><div class="s-name">Randy</div><div class="s-val" id="scoreRandy">0</div></div>
+    <div class="score-item p1-score"><div class="s-name" id="sNameP1">P1</div><div class="s-val" id="scoreP1">0</div></div>
     <div class="score-divider"></div>
     <div class="score-item draws"><div class="s-name">Draws</div><div class="s-val" id="scoreDraws">0</div></div>
     <div class="score-divider"></div>
-    <div class="score-item roman"><div class="s-name">Roman</div><div class="s-val" id="scoreRoman">0</div></div>
+    <div class="score-item p2-score"><div class="s-name" id="sNameP2">P2</div><div class="s-val" id="scoreP2">0</div></div>
   </div>
-
   <div class="arena">
-    <!-- Randy card -->
-    <div class="player-card randy-card active-card" id="cardRandy">
-      <div class="you-tag" id="youTagRandy">YOU</div>
-      <div class="card-portrait" id="portraitRandy"></div>
-      <div class="player-name">RANDY<br>ORTON</div>
-      <div class="player-symbol">RKO</div>
+    <div class="player-card p1-card active-card" id="cardP1">
+      <div class="you-tag" id="youTagP1">YOU</div>
+      <div class="card-portrait" id="portraitP1"></div>
+      <div class="player-name" id="p1Name">PLAYER 1</div>
+      <div class="player-symbol" id="p1Symbol">P1</div>
       <div class="turn-badge">YOUR TURN</div>
     </div>
-
-    <!-- Board -->
     <div class="board-wrap">
-      <div class="status-msg" id="statusMsg">Randy Orton's Move!</div>
+      <div class="status-msg" id="statusMsg">Player 1's Move!</div>
       <div class="board" id="board">
         <div class="cell" data-i="0"></div><div class="cell" data-i="1"></div><div class="cell" data-i="2"></div>
         <div class="cell" data-i="3"></div><div class="cell" data-i="4"></div><div class="cell" data-i="5"></div>
         <div class="cell" data-i="6"></div><div class="cell" data-i="7"></div><div class="cell" data-i="8"></div>
       </div>
       <div class="btn-row">
-        <button class="btn btn-red"   onclick="handleRematch()">🔄 Rematch</button>
-        <button class="btn btn-gold"  onclick="handleNewSeries()">🏆 New Series</button>
+        <button class="btn btn-red" onclick="handleRematch()">🔄 Rematch</button>
+        <button class="btn btn-gold" onclick="handleNewSeries()">🏆 New Series</button>
         <button class="btn btn-ghost" style="font-size:0.85rem;padding:8px 14px" onclick="cancelAndBack()">🏠 Menu</button>
       </div>
     </div>
-
-    <!-- Roman card -->
-    <div class="player-card roman-card" id="cardRoman">
-      <div class="you-tag" id="youTagRoman">YOU</div>
-      <div class="card-portrait" id="portraitRoman"></div>
-      <div class="player-name">ROMAN<br>REIGNS</div>
-      <div class="player-symbol">SP</div>
+    <div class="player-card p2-card" id="cardP2">
+      <div class="you-tag" id="youTagP2">YOU</div>
+      <div class="card-portrait" id="portraitP2"></div>
+      <div class="player-name" id="p2Name">PLAYER 2</div>
+      <div class="player-symbol" id="p2Symbol">P2</div>
       <div class="turn-badge">YOUR TURN</div>
     </div>
   </div>
@@ -523,9 +302,9 @@
   <div class="overlay-box">
     <div class="belt-badge">🥊 WINNER 🥊</div>
     <div class="overlay-portrait" id="overlayPortrait"></div>
-    <div class="overlay-title" id="overlayTitle">RANDY WINS!</div>
-    <div class="overlay-sub"   id="overlaySub">RKO OUTTA NOWHERE!</div>
-    <button class="btn btn-red"  style="margin-right:8px" onclick="closeOverlay();handleRematch()">🔄 Rematch</button>
+    <div class="overlay-title" id="overlayTitle">WINS!</div>
+    <div class="overlay-sub" id="overlaySub"></div>
+    <button class="btn btn-red" style="margin-right:8px" onclick="closeOverlay();handleRematch()">🔄 Rematch</button>
     <button class="btn btn-gold" onclick="closeOverlay();handleNewSeries()">🏆 New Series</button>
   </div>
 </div>
@@ -536,99 +315,303 @@
 // ─────────────────────────────────────────────
 //  SVG PORTRAITS
 // ─────────────────────────────────────────────
-const SVG_RANDY = `
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 110">
-  <path d="M0 110 Q0 88 22 80 L50 72 L78 80 Q100 88 100 110Z" fill="#1c0000"/>
-  <path d="M22 80 Q36 76 50 74 Q64 76 78 80" stroke="#ff4444" stroke-width="3" fill="none"/>
-  <text x="50" y="100" text-anchor="middle" fill="#ff4444" font-family="Arial Black,sans-serif" font-size="15" font-weight="900" letter-spacing="2">RKO</text>
-  <path d="M12 88 Q10 84 14 82 Q18 80 16 76" stroke="#cc4422" stroke-width="1.5" fill="none" opacity="0.7" stroke-linecap="round"/>
-  <ellipse cx="16" cy="75" rx="2" ry="1.5" fill="#cc4422" opacity="0.7"/>
-  <path d="M38 62 Q38 52 42 50 L58 50 Q62 52 62 62 Q56 68 44 68Z" fill="#F2B98A"/>
-  <ellipse cx="50" cy="38" rx="27" ry="30" fill="#F2B98A"/>
-  <path d="M25 44 Q23 55 26 62 Q34 72 50 72 Q66 72 74 62 Q77 55 75 44" fill="#ebb080" opacity="0.45"/>
-  <path d="M23 28 Q23 6 50 5 Q77 6 77 28 Q68 18 50 18 Q32 18 23 28Z" fill="#9A6B35"/>
-  <rect x="22" y="25" width="5" height="22" rx="2.5" fill="#9A6B35"/>
-  <rect x="73" y="25" width="5" height="22" rx="2.5" fill="#9A6B35"/>
-  <ellipse cx="22.5" cy="40" rx="5" ry="6.5" fill="#F2B98A"/>
-  <ellipse cx="77.5" cy="40" rx="5" ry="6.5" fill="#F2B98A"/>
-  <ellipse cx="22.5" cy="40" rx="3" ry="4" fill="#dfa070"/>
-  <ellipse cx="77.5" cy="40" rx="3" ry="4" fill="#dfa070"/>
-  <ellipse cx="36" cy="34" rx="8.5" ry="7" fill="white"/>
-  <ellipse cx="64" cy="34" rx="8.5" ry="7" fill="white"/>
-  <circle cx="36" cy="35" r="5.2" fill="#6080A0"/>
-  <circle cx="64" cy="35" r="5.2" fill="#6080A0"/>
-  <circle cx="36" cy="35" r="2.6" fill="#0c0810"/>
-  <circle cx="64" cy="35" r="2.6" fill="#0c0810"/>
-  <circle cx="38.5" cy="32.5" r="1.4" fill="white" opacity="0.95"/>
-  <circle cx="66.5" cy="32.5" r="1.4" fill="white" opacity="0.95"/>
-  <path d="M27 25 Q35 20 44 25" stroke="#6A4010" stroke-width="3" fill="none" stroke-linecap="round"/>
-  <path d="M56 25 Q65 20 73 25" stroke="#6A4010" stroke-width="3" fill="none" stroke-linecap="round"/>
-  <path d="M34 26 Q36 23 38 26" stroke="#4A2800" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-  <path d="M62 26 Q64 23 66 26" stroke="#4A2800" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-  <path d="M47 42 L45 50 Q50 53 55 50 L53 42Z" fill="#d9955e" opacity="0.65"/>
-  <path d="M37 57 Q43 62 52 60 Q60 58 63 55" stroke="#b06040" stroke-width="2.8" fill="none" stroke-linecap="round"/>
-  <ellipse cx="26" cy="46" rx="7" ry="4" fill="#ff9977" opacity="0.18"/>
-  <ellipse cx="74" cy="46" rx="7" ry="4" fill="#ff9977" opacity="0.18"/>
-  <circle cx="36" cy="60" r="1" fill="#c07848" opacity="0.5"/>
-  <circle cx="40" cy="63" r="0.9" fill="#c07848" opacity="0.5"/>
-  <circle cx="44" cy="65" r="1" fill="#c07848" opacity="0.5"/>
-  <circle cx="50" cy="66" r="1" fill="#c07848" opacity="0.5"/>
-  <circle cx="56" cy="65" r="1" fill="#c07848" opacity="0.5"/>
-  <circle cx="60" cy="63" r="0.9" fill="#c07848" opacity="0.5"/>
-  <circle cx="64" cy="60" r="1" fill="#c07848" opacity="0.5"/>
+const SVG_RANDY = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 110">
+<path d="M0 110 Q0 88 22 80 L50 72 L78 80 Q100 88 100 110Z" fill="#1c0000"/>
+<path d="M22 80 Q36 76 50 74 Q64 76 78 80" stroke="#ff4444" stroke-width="3" fill="none"/>
+<text x="50" y="100" text-anchor="middle" fill="#ff4444" font-family="Arial Black,sans-serif" font-size="15" font-weight="900" letter-spacing="2">RKO</text>
+<rect x="22" y="25" width="5" height="22" rx="2.5" fill="#9A6B35"/>
+<rect x="73" y="25" width="5" height="22" rx="2.5" fill="#9A6B35"/>
+<ellipse cx="22.5" cy="40" rx="5" ry="6.5" fill="#F2B98A"/><ellipse cx="77.5" cy="40" rx="5" ry="6.5" fill="#F2B98A"/>
+<ellipse cx="22.5" cy="40" rx="3" ry="4" fill="#dfa070"/><ellipse cx="77.5" cy="40" rx="3" ry="4" fill="#dfa070"/>
+<path d="M38 62 Q38 52 42 50 L58 50 Q62 52 62 62 Q56 68 44 68Z" fill="#F2B98A"/>
+<ellipse cx="50" cy="38" rx="27" ry="30" fill="#F2B98A"/>
+<path d="M23 28 Q23 6 50 5 Q77 6 77 28 Q68 18 50 18 Q32 18 23 28Z" fill="#9A6B35"/>
+<ellipse cx="36" cy="34" rx="8.5" ry="7" fill="white"/><ellipse cx="64" cy="34" rx="8.5" ry="7" fill="white"/>
+<circle cx="36" cy="35" r="5.2" fill="#6080A0"/><circle cx="64" cy="35" r="5.2" fill="#6080A0"/>
+<circle cx="36" cy="35" r="2.6" fill="#0c0810"/><circle cx="64" cy="35" r="2.6" fill="#0c0810"/>
+<circle cx="38.5" cy="32.5" r="1.4" fill="white" opacity="0.95"/><circle cx="66.5" cy="32.5" r="1.4" fill="white" opacity="0.95"/>
+<path d="M27 25 Q35 20 44 25" stroke="#6A4010" stroke-width="3" fill="none" stroke-linecap="round"/>
+<path d="M56 25 Q65 20 73 25" stroke="#6A4010" stroke-width="3" fill="none" stroke-linecap="round"/>
+<path d="M47 42 L45 50 Q50 53 55 50 L53 42Z" fill="#d9955e" opacity="0.65"/>
+<path d="M37 57 Q43 62 52 60 Q60 58 63 55" stroke="#b06040" stroke-width="2.8" fill="none" stroke-linecap="round"/>
 </svg>`;
 
-const SVG_ROMAN = `
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 110">
-  <path d="M0 110 Q0 88 22 80 L50 72 L78 80 Q100 88 100 110Z" fill="#0d1f3c"/>
-  <path d="M22 80 Q36 76 50 74 Q64 76 78 80" stroke="#3399ff" stroke-width="3" fill="none"/>
-  <path d="M44 95 L50 84 L53.5 93 L62 76 L55 84 L51.5 75Z" fill="#3399ff" opacity="0.95"/>
-  <path d="M23 32 Q12 46 10 66 Q12 78 20 82 Q14 68 17 52 Q18 42 23 36Z" fill="#111" stroke="#1a1a1a" stroke-width="0.5"/>
-  <path d="M77 32 Q88 46 90 66 Q88 78 80 82 Q86 68 83 52 Q82 42 77 36Z" fill="#111" stroke="#1a1a1a" stroke-width="0.5"/>
-  <path d="M38 62 Q38 52 42 50 L58 50 Q62 52 62 62 Q56 68 44 68Z" fill="#8C5430"/>
-  <ellipse cx="50" cy="38" rx="27" ry="30" fill="#9C5E34"/>
-  <path d="M25 44 Q23 55 26 62 Q34 72 50 72 Q66 72 74 62 Q77 55 75 44" fill="#8A4C24" opacity="0.4"/>
-  <path d="M23 28 Q23 5 50 4 Q77 5 77 28 Q68 14 50 14 Q32 14 23 28Z" fill="#111"/>
-  <path d="M23 28 Q18 34 19 44" stroke="#111" stroke-width="8" fill="none" stroke-linecap="round"/>
-  <path d="M77 28 Q82 34 81 44" stroke="#111" stroke-width="8" fill="none" stroke-linecap="round"/>
-  <ellipse cx="22.5" cy="40" rx="5" ry="6.5" fill="#9C5E34"/>
-  <ellipse cx="77.5" cy="40" rx="5" ry="6.5" fill="#9C5E34"/>
-  <ellipse cx="22.5" cy="40" rx="3" ry="4" fill="#7A4422"/>
-  <ellipse cx="77.5" cy="40" rx="3" ry="4" fill="#7A4422"/>
-  <ellipse cx="36" cy="34" rx="8.5" ry="7" fill="white"/>
-  <ellipse cx="64" cy="34" rx="8.5" ry="7" fill="white"/>
-  <circle cx="36" cy="35" r="5.2" fill="#3C2010"/>
-  <circle cx="64" cy="35" r="5.2" fill="#3C2010"/>
-  <circle cx="36" cy="35" r="2.6" fill="#0c0808"/>
-  <circle cx="64" cy="35" r="2.6" fill="#0c0808"/>
-  <circle cx="38.5" cy="32.5" r="1.4" fill="white" opacity="0.95"/>
-  <circle cx="66.5" cy="32.5" r="1.4" fill="white" opacity="0.95"/>
-  <path d="M27 25 Q36 22 45 26" stroke="#1a0800" stroke-width="4" fill="none" stroke-linecap="round"/>
-  <path d="M55 26 Q64 22 73 25" stroke="#1a0800" stroke-width="4" fill="none" stroke-linecap="round"/>
-  <path d="M46 42 L43 50 Q50 54 57 50 L54 42Z" fill="#7A3C18" opacity="0.65"/>
-  <ellipse cx="44" cy="51" rx="3" ry="2" fill="#5a2808" opacity="0.4"/>
-  <ellipse cx="56" cy="51" rx="3" ry="2" fill="#5a2808" opacity="0.4"/>
-  <path d="M36 57 Q50 61 64 57" stroke="#6A2C10" stroke-width="3" fill="none" stroke-linecap="round"/>
-  <ellipse cx="26" cy="46" rx="8" ry="5" fill="#b07040" opacity="0.25"/>
-  <ellipse cx="74" cy="46" rx="8" ry="5" fill="#b07040" opacity="0.25"/>
-  <path d="M34 60 Q38 57 42 60 Q46 57 50 60 Q54 57 58 60 Q62 57 66 60" stroke="#5a2808" stroke-width="1.2" fill="none" opacity="0.65" stroke-linecap="round"/>
-  <path d="M38 64 Q44 61 50 64 Q56 61 62 64" stroke="#5a2808" stroke-width="1.2" fill="none" opacity="0.5" stroke-linecap="round"/>
-  <path d="M38 68 Q44 72 50 71 Q56 72 62 68" stroke="#888855" stroke-width="1.5" fill="none" opacity="0.6" stroke-linecap="round"/>
+const SVG_ROMAN = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 110">
+<path d="M0 110 Q0 88 22 80 L50 72 L78 80 Q100 88 100 110Z" fill="#0d1f3c"/>
+<path d="M22 80 Q36 76 50 74 Q64 76 78 80" stroke="#3399ff" stroke-width="3" fill="none"/>
+<path d="M44 95 L50 84 L53.5 93 L62 76 L55 84 L51.5 75Z" fill="#3399ff" opacity="0.95"/>
+<path d="M23 32 Q12 46 10 66 Q12 78 20 82 Q14 68 17 52 Q18 42 23 36Z" fill="#111"/>
+<path d="M77 32 Q88 46 90 66 Q88 78 80 82 Q86 68 83 52 Q82 42 77 36Z" fill="#111"/>
+<path d="M38 62 Q38 52 42 50 L58 50 Q62 52 62 62 Q56 68 44 68Z" fill="#8C5430"/>
+<ellipse cx="50" cy="38" rx="27" ry="30" fill="#9C5E34"/>
+<path d="M23 28 Q23 5 50 4 Q77 5 77 28 Q68 14 50 14 Q32 14 23 28Z" fill="#111"/>
+<path d="M23 28 Q18 34 19 44" stroke="#111" stroke-width="8" fill="none" stroke-linecap="round"/>
+<path d="M77 28 Q82 34 81 44" stroke="#111" stroke-width="8" fill="none" stroke-linecap="round"/>
+<ellipse cx="22.5" cy="40" rx="5" ry="6.5" fill="#9C5E34"/><ellipse cx="77.5" cy="40" rx="5" ry="6.5" fill="#9C5E34"/>
+<ellipse cx="22.5" cy="40" rx="3" ry="4" fill="#7A4422"/><ellipse cx="77.5" cy="40" rx="3" ry="4" fill="#7A4422"/>
+<ellipse cx="36" cy="34" rx="8.5" ry="7" fill="white"/><ellipse cx="64" cy="34" rx="8.5" ry="7" fill="white"/>
+<circle cx="36" cy="35" r="5.2" fill="#3C2010"/><circle cx="64" cy="35" r="5.2" fill="#3C2010"/>
+<circle cx="36" cy="35" r="2.6" fill="#0c0808"/><circle cx="64" cy="35" r="2.6" fill="#0c0808"/>
+<circle cx="38.5" cy="32.5" r="1.4" fill="white" opacity="0.95"/><circle cx="66.5" cy="32.5" r="1.4" fill="white" opacity="0.95"/>
+<path d="M27 25 Q36 22 45 26" stroke="#1a0800" stroke-width="4" fill="none" stroke-linecap="round"/>
+<path d="M55 26 Q64 22 73 25" stroke="#1a0800" stroke-width="4" fill="none" stroke-linecap="round"/>
+<path d="M46 42 L43 50 Q50 54 57 50 L54 42Z" fill="#7A3C18" opacity="0.65"/>
+<path d="M36 57 Q50 61 64 57" stroke="#6A2C10" stroke-width="3" fill="none" stroke-linecap="round"/>
+</svg>`;
+
+const SVG_HOGAN = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 110">
+<path d="M0 110 Q0 88 22 80 L50 72 L78 80 Q100 88 100 110Z" fill="#cc0000"/>
+<path d="M22 80 Q36 76 50 74 Q64 76 78 80" stroke="#FFD700" stroke-width="3" fill="none"/>
+<text x="50" y="100" text-anchor="middle" fill="#FFD700" font-family="Arial Black,sans-serif" font-size="9" font-weight="900">HULKAMANIA</text>
+<ellipse cx="50" cy="37" rx="27" ry="30" fill="#C47A2A"/>
+<rect x="23" y="26" width="4" height="20" rx="2" fill="#C47A2A"/>
+<rect x="73" y="26" width="4" height="20" rx="2" fill="#C47A2A"/>
+<ellipse cx="23" cy="41" rx="5" ry="6.5" fill="#C47A2A"/><ellipse cx="77" cy="41" rx="5" ry="6.5" fill="#C47A2A"/>
+<ellipse cx="23" cy="41" rx="3" ry="4" fill="#A06020"/><ellipse cx="77" cy="41" rx="3" ry="4" fill="#A06020"/>
+<path d="M24 20 Q50 14 76 20 L76 28 Q50 22 24 28Z" fill="#cc0000"/>
+<path d="M24 20 Q50 14 76 20" stroke="#FFD700" stroke-width="2" fill="none"/>
+<path d="M24 28 Q50 22 76 28" stroke="#FFD700" stroke-width="1" fill="none"/>
+<ellipse cx="36" cy="36" rx="8.5" ry="7" fill="white"/><ellipse cx="64" cy="36" rx="8.5" ry="7" fill="white"/>
+<circle cx="36" cy="37" r="5.2" fill="#4488CC"/><circle cx="64" cy="37" r="5.2" fill="#4488CC"/>
+<circle cx="36" cy="37" r="2.6" fill="#060408"/><circle cx="64" cy="37" r="2.6" fill="#060408"/>
+<circle cx="38.5" cy="34.5" r="1.4" fill="white" opacity="0.95"/><circle cx="66.5" cy="34.5" r="1.4" fill="white" opacity="0.95"/>
+<path d="M28 28 Q36 23 44 28" stroke="#8B5A00" stroke-width="3" fill="none" stroke-linecap="round"/>
+<path d="M56 28 Q64 23 72 28" stroke="#8B5A00" stroke-width="3" fill="none" stroke-linecap="round"/>
+<path d="M47 43 L45 51 Q50 54 55 51 L53 43Z" fill="#A06020" opacity="0.65"/>
+<path d="M35 57 Q50 51 65 57" stroke="#D4A820" stroke-width="6" fill="none" stroke-linecap="round"/>
+<path d="M35 57 Q32 64 35 69" stroke="#D4A820" stroke-width="6" fill="none" stroke-linecap="round"/>
+<path d="M65 57 Q68 64 65 69" stroke="#D4A820" stroke-width="6" fill="none" stroke-linecap="round"/>
+</svg>`;
+
+const SVG_WARRIOR = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 110">
+<path d="M0 110 Q0 88 22 80 L50 72 L78 80 Q100 88 100 110Z" fill="#882200"/>
+<path d="M22 80 Q36 76 50 74 Q64 76 78 80" stroke="#FF6600" stroke-width="3" fill="none"/>
+<text x="50" y="100" text-anchor="middle" fill="#FF6600" font-family="Arial Black,sans-serif" font-size="10" font-weight="900">WARRIOR</text>
+<path d="M23 30 Q14 14 20 4 Q26 0 30 10 Q26 4 28 14 Q24 22 23 30Z" fill="#1a0800"/>
+<path d="M77 30 Q86 14 80 4 Q74 0 70 10 Q74 4 72 14 Q76 22 77 30Z" fill="#1a0800"/>
+<path d="M30 8 Q50 1 70 8" stroke="#1a0800" stroke-width="7" fill="none"/>
+<ellipse cx="50" cy="37" rx="27" ry="30" fill="#D08040"/>
+<rect x="23" y="26" width="4" height="20" rx="2" fill="#D08040"/>
+<rect x="73" y="26" width="4" height="20" rx="2" fill="#D08040"/>
+<ellipse cx="23" cy="41" rx="5" ry="6.5" fill="#D08040"/><ellipse cx="77" cy="41" rx="5" ry="6.5" fill="#D08040"/>
+<path d="M20 31 Q50 26 80 31 L80 39 Q50 34 20 39Z" fill="#cc0000" opacity="0.8"/>
+<ellipse cx="24" cy="46" rx="8" ry="5" fill="#FFD700" opacity="0.55"/>
+<ellipse cx="76" cy="46" rx="8" ry="5" fill="#FFD700" opacity="0.55"/>
+<path d="M46 13 Q50 9 54 13 L53 27 Q50 29 47 27Z" fill="#0044cc" opacity="0.75"/>
+<ellipse cx="36" cy="35" rx="8.5" ry="7" fill="white"/><ellipse cx="64" cy="35" rx="8.5" ry="7" fill="white"/>
+<circle cx="36" cy="35" r="5.2" fill="#2244AA"/><circle cx="64" cy="35" r="5.2" fill="#2244AA"/>
+<circle cx="36" cy="35" r="2.6" fill="#060408"/><circle cx="64" cy="35" r="2.6" fill="#060408"/>
+<circle cx="38.5" cy="32.5" r="1.4" fill="white" opacity="0.95"/><circle cx="66.5" cy="32.5" r="1.4" fill="white" opacity="0.95"/>
+<path d="M27 26 Q36 22 45 26" stroke="#1a0800" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+<path d="M55 26 Q64 22 73 26" stroke="#1a0800" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+<path d="M47 43 L45 51 Q50 54 55 51 L53 43Z" fill="#B05020" opacity="0.65"/>
+<path d="M37 58 Q50 63 63 58" stroke="#90401A" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+</svg>`;
+
+const SVG_SAVAGE = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 110">
+<path d="M0 110 Q0 88 22 80 L50 72 L78 80 Q100 88 100 110Z" fill="#550088"/>
+<path d="M22 80 Q36 76 50 74 Q64 76 78 80" stroke="#FFD700" stroke-width="3" fill="none"/>
+<text x="50" y="100" text-anchor="middle" fill="#FFD700" font-family="Arial Black,sans-serif" font-size="10" font-weight="900">OOH YEAH!</text>
+<ellipse cx="50" cy="38" rx="27" ry="30" fill="#C47A2A"/>
+<rect x="23" y="26" width="4" height="22" rx="2" fill="#C47A2A"/>
+<rect x="73" y="26" width="4" height="22" rx="2" fill="#C47A2A"/>
+<ellipse cx="23" cy="42" rx="5" ry="6.5" fill="#C47A2A"/><ellipse cx="77" cy="42" rx="5" ry="6.5" fill="#C47A2A"/>
+<ellipse cx="23" cy="42" rx="3" ry="4" fill="#A06020"/><ellipse cx="77" cy="42" rx="3" ry="4" fill="#A06020"/>
+<ellipse cx="50" cy="14" rx="33" ry="5" fill="#550088"/>
+<rect x="29" y="2" width="42" height="15" rx="6" fill="#6600aa"/>
+<path d="M29 14 L18 16 L17 19 Q50 21 83 19 L82 16 L71 14" fill="#440077"/>
+<path d="M17 19 Q50 22 83 19" stroke="#FFD700" stroke-width="1.5" fill="none"/>
+<rect x="22" y="31" width="22" height="13" rx="5" fill="#111" opacity="0.88"/>
+<rect x="56" y="31" width="22" height="13" rx="5" fill="#111" opacity="0.88"/>
+<path d="M44 37 L56 37" stroke="#888" stroke-width="1.5" fill="none"/>
+<path d="M22 37 L18 35" stroke="#888" stroke-width="1.5" fill="none"/>
+<path d="M78 37 L82 35" stroke="#888" stroke-width="1.5" fill="none"/>
+<path d="M47 49 L45 56 Q50 59 55 56 L53 49Z" fill="#A06020" opacity="0.65"/>
+<path d="M35 61 Q43 57 50 59 Q57 57 65 61" stroke="#2a1a00" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+<path d="M37 64 Q50 68 63 64" stroke="#90401A" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+</svg>`;
+
+const SVG_UNDERTAKER = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 110">
+<path d="M0 110 Q0 88 22 80 L50 72 L78 80 Q100 88 100 110Z" fill="#111111"/>
+<path d="M22 80 Q36 76 50 74 Q64 76 78 80" stroke="#6600aa" stroke-width="3" fill="none"/>
+<text x="50" y="100" text-anchor="middle" fill="#6600aa" font-family="Arial Black,sans-serif" font-size="12" font-weight="900">R.I.P.</text>
+<path d="M23 30 Q12 42 12 66 Q14 74 20 78" fill="#111"/>
+<path d="M77 30 Q88 42 88 66 Q86 74 80 78" fill="#111"/>
+<ellipse cx="50" cy="12" rx="38" ry="6" fill="#111"/>
+<rect x="32" y="1" width="36" height="14" rx="4" fill="#1a1a1a"/>
+<path d="M32 12 L14 14 L12 17 Q50 20 88 17 L86 14 L68 12" fill="#0d0d0d"/>
+<path d="M12 17 Q50 21 88 17" stroke="#333" stroke-width="1" fill="none"/>
+<ellipse cx="50" cy="41" rx="27" ry="28" fill="#E0CCB0"/>
+<rect x="23" y="29" width="4" height="20" rx="2" fill="#E0CCB0"/>
+<rect x="73" y="29" width="4" height="20" rx="2" fill="#E0CCB0"/>
+<ellipse cx="23" cy="44" rx="5" ry="6" fill="#E0CCB0"/><ellipse cx="77" cy="44" rx="5" ry="6" fill="#E0CCB0"/>
+<ellipse cx="23" cy="44" rx="3" ry="4" fill="#C0A888"/><ellipse cx="77" cy="44" rx="3" ry="4" fill="#C0A888"/>
+<ellipse cx="36" cy="38" rx="8.5" ry="7" fill="white"/><ellipse cx="64" cy="38" rx="8.5" ry="7" fill="white"/>
+<ellipse cx="36" cy="40" rx="5" ry="4" fill="#999" opacity="0.55"/>
+<ellipse cx="64" cy="40" rx="5" ry="4" fill="#999" opacity="0.55"/>
+<path d="M27 30 Q36 26 45 30" stroke="#2a1010" stroke-width="3" fill="none" stroke-linecap="round"/>
+<path d="M55 30 Q64 26 73 30" stroke="#2a1010" stroke-width="3" fill="none" stroke-linecap="round"/>
+<path d="M47 47 L45 54 Q50 57 55 54 L53 47Z" fill="#C0A888" opacity="0.65"/>
+<path d="M37 61 Q50 59 63 61" stroke="#8a7060" stroke-width="2" fill="none" stroke-linecap="round"/>
+</svg>`;
+
+const SVG_FLAIR = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 110">
+<path d="M0 110 Q0 88 22 80 L50 72 L78 80 Q100 88 100 110Z" fill="#1a1a4a"/>
+<path d="M22 80 Q36 76 50 74 Q64 76 78 80" stroke="#aaaaff" stroke-width="3" fill="none"/>
+<text x="50" y="100" text-anchor="middle" fill="#aaaaff" font-family="Arial Black,sans-serif" font-size="13" font-weight="900">WOOO!</text>
+<path d="M23 26 Q18 14 22 7 Q28 1 35 10 Q29 5 31 15 Q25 20 23 26Z" fill="#d0d0d0"/>
+<path d="M77 26 Q82 14 78 7 Q72 1 65 10 Q71 5 69 15 Q75 20 77 26Z" fill="#d0d0d0"/>
+<path d="M35 8 Q50 2 65 8" stroke="#c0c0c0" stroke-width="6" fill="none"/>
+<ellipse cx="50" cy="39" rx="27" ry="30" fill="#F0C8A0"/>
+<rect x="23" y="26" width="4" height="22" rx="2" fill="#F0C8A0"/>
+<rect x="73" y="26" width="4" height="22" rx="2" fill="#F0C8A0"/>
+<ellipse cx="23" cy="43" rx="5" ry="6.5" fill="#F0C8A0"/><ellipse cx="77" cy="43" rx="5" ry="6.5" fill="#F0C8A0"/>
+<ellipse cx="23" cy="43" rx="3" ry="4" fill="#D8A880"/><ellipse cx="77" cy="43" rx="3" ry="4" fill="#D8A880"/>
+<ellipse cx="36" cy="36" rx="8.5" ry="7" fill="white"/><ellipse cx="64" cy="36" rx="8.5" ry="7" fill="white"/>
+<circle cx="36" cy="37" r="5.2" fill="#4477AA"/><circle cx="64" cy="37" r="5.2" fill="#4477AA"/>
+<circle cx="36" cy="37" r="2.6" fill="#060408"/><circle cx="64" cy="37" r="2.6" fill="#060408"/>
+<circle cx="38.5" cy="34.5" r="1.4" fill="white" opacity="0.95"/><circle cx="66.5" cy="34.5" r="1.4" fill="white" opacity="0.95"/>
+<path d="M27 27 Q36 23 45 27" stroke="#aaaaaa" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+<path d="M55 27 Q64 23 73 27" stroke="#aaaaaa" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+<path d="M47 44 L45 52 Q50 55 55 52 L53 44Z" fill="#D0A070" opacity="0.65"/>
+<path d="M34 59 Q50 70 66 59" stroke="#B08060" stroke-width="2" fill="none" stroke-linecap="round"/>
+<path d="M38 61 Q50 68 62 61 Q50 65 38 61Z" fill="white" opacity="0.75"/>
+<ellipse cx="25" cy="48" rx="7" ry="4" fill="#ff9999" opacity="0.28"/>
+<ellipse cx="75" cy="48" rx="7" ry="4" fill="#ff9999" opacity="0.28"/>
+</svg>`;
+
+const SVG_CENA = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 110">
+<path d="M0 110 Q0 88 22 80 L50 72 L78 80 Q100 88 100 110Z" fill="#003399"/>
+<path d="M22 80 Q36 76 50 74 Q64 76 78 80" stroke="#FF6600" stroke-width="3" fill="none"/>
+<text x="50" y="100" text-anchor="middle" fill="#FF6600" font-family="Arial Black,sans-serif" font-size="9" font-weight="900">U CANT C ME</text>
+<rect x="24" y="5" width="52" height="15" rx="7" fill="#0044cc"/>
+<ellipse cx="50" cy="19" rx="27" ry="5" fill="#003399"/>
+<path d="M24 19 Q50 23 76 19" stroke="#FF6600" stroke-width="1.5" fill="none"/>
+<ellipse cx="50" cy="40" rx="27" ry="28" fill="#E8B888"/>
+<rect x="23" y="29" width="4" height="20" rx="2" fill="#E8B888"/>
+<rect x="73" y="29" width="4" height="20" rx="2" fill="#E8B888"/>
+<ellipse cx="23" cy="44" rx="5" ry="6" fill="#E8B888"/><ellipse cx="77" cy="44" rx="5" ry="6" fill="#E8B888"/>
+<ellipse cx="23" cy="44" rx="3" ry="4" fill="#C89868"/><ellipse cx="77" cy="44" rx="3" ry="4" fill="#C89868"/>
+<path d="M24 19 Q24 25 27 28" stroke="#5a3a20" stroke-width="3" fill="none"/>
+<path d="M76 19 Q76 25 73 28" stroke="#5a3a20" stroke-width="3" fill="none"/>
+<ellipse cx="36" cy="38" rx="8.5" ry="7" fill="white"/><ellipse cx="64" cy="38" rx="8.5" ry="7" fill="white"/>
+<circle cx="36" cy="39" r="5.2" fill="#4466CC"/><circle cx="64" cy="39" r="5.2" fill="#4466CC"/>
+<circle cx="36" cy="39" r="2.6" fill="#060408"/><circle cx="64" cy="39" r="2.6" fill="#060408"/>
+<circle cx="38.5" cy="36.5" r="1.4" fill="white" opacity="0.95"/><circle cx="66.5" cy="36.5" r="1.4" fill="white" opacity="0.95"/>
+<path d="M27 29 Q36 25 45 29" stroke="#3a2010" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+<path d="M55 29 Q64 25 73 29" stroke="#3a2010" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+<path d="M47 46 L45 53 Q50 56 55 53 L53 46Z" fill="#C09060" opacity="0.65"/>
+<path d="M37 60 Q50 65 63 60" stroke="#906040" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+</svg>`;
+
+const SVG_PUNK = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 110">
+<path d="M0 110 Q0 88 22 80 L50 72 L78 80 Q100 88 100 110Z" fill="#111111"/>
+<path d="M22 80 Q36 76 50 74 Q64 76 78 80" stroke="#ffffff" stroke-width="3" fill="none"/>
+<text x="50" y="100" text-anchor="middle" fill="#ffffff" font-family="Arial Black,sans-serif" font-size="9" font-weight="900">BEST IN WORLD</text>
+<path d="M23 29 Q18 42 18 66 Q20 73 24 77" fill="#111"/>
+<path d="M77 29 Q82 42 82 66 Q80 73 76 77" fill="#111"/>
+<path d="M23 29 Q30 10 50 8 Q70 10 77 29 Q65 16 50 15 Q35 16 23 29Z" fill="#111"/>
+<ellipse cx="50" cy="41" rx="27" ry="28" fill="#E8C8A8"/>
+<rect x="23" y="29" width="4" height="20" rx="2" fill="#E8C8A8"/>
+<rect x="73" y="29" width="4" height="20" rx="2" fill="#E8C8A8"/>
+<ellipse cx="23" cy="44" rx="5" ry="6" fill="#E8C8A8"/><ellipse cx="77" cy="44" rx="5" ry="6" fill="#E8C8A8"/>
+<ellipse cx="23" cy="44" rx="3" ry="4" fill="#C8A888"/><ellipse cx="77" cy="44" rx="3" ry="4" fill="#C8A888"/>
+<ellipse cx="36" cy="39" rx="8.5" ry="7" fill="white"/><ellipse cx="64" cy="39" rx="8.5" ry="7" fill="white"/>
+<circle cx="36" cy="39" r="5.2" fill="#4a3060"/><circle cx="64" cy="39" r="5.2" fill="#4a3060"/>
+<circle cx="36" cy="39" r="2.6" fill="#060408"/><circle cx="64" cy="39" r="2.6" fill="#060408"/>
+<circle cx="38.5" cy="36.5" r="1.4" fill="white" opacity="0.95"/><circle cx="66.5" cy="36.5" r="1.4" fill="white" opacity="0.95"/>
+<path d="M27 30 Q36 26 45 30" stroke="#111" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+<path d="M55 30 Q64 26 73 30" stroke="#111" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+<path d="M47 47 L45 54 Q50 57 55 54 L53 47Z" fill="#B09070" opacity="0.65"/>
+<path d="M37 60 Q50 65 63 60" stroke="#222" stroke-width="3" fill="none" stroke-linecap="round"/>
+<path d="M44 63 Q50 69 56 63" stroke="#222" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+<path d="M44 19 L56 27 M56 19 L44 27" stroke="#000" stroke-width="2" stroke-linecap="round"/>
+</svg>`;
+
+const SVG_ROCK = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 110">
+<path d="M0 110 Q0 88 22 80 L50 72 L78 80 Q100 88 100 110Z" fill="#111111"/>
+<path d="M22 80 Q36 76 50 74 Q64 76 78 80" stroke="#CC8800" stroke-width="3" fill="none"/>
+<text x="50" y="100" text-anchor="middle" fill="#CC8800" font-family="Arial Black,sans-serif" font-size="8" font-weight="900">IF YA SMELL...</text>
+<ellipse cx="50" cy="37" rx="27" ry="30" fill="#7A4020"/>
+<path d="M23 27 Q23 6 50 5 Q77 6 77 27 Q68 14 50 14 Q32 14 23 27Z" fill="#7A4020"/>
+<rect x="23" y="25" width="4" height="20" rx="2" fill="#7A4020"/>
+<rect x="73" y="25" width="4" height="20" rx="2" fill="#7A4020"/>
+<ellipse cx="23" cy="41" rx="5" ry="6.5" fill="#7A4020"/><ellipse cx="77" cy="41" rx="5" ry="6.5" fill="#7A4020"/>
+<ellipse cx="23" cy="41" rx="3" ry="4" fill="#5A2C10"/><ellipse cx="77" cy="41" rx="3" ry="4" fill="#5A2C10"/>
+<ellipse cx="42" cy="18" rx="6" ry="3" fill="white" opacity="0.12"/>
+<ellipse cx="36" cy="36" rx="8.5" ry="7" fill="white"/><ellipse cx="64" cy="36" rx="8.5" ry="7" fill="white"/>
+<circle cx="36" cy="37" r="5.2" fill="#3C1A08"/><circle cx="64" cy="37" r="5.2" fill="#3C1A08"/>
+<circle cx="36" cy="37" r="2.6" fill="#060408"/><circle cx="64" cy="37" r="2.6" fill="#060408"/>
+<circle cx="38.5" cy="34.5" r="1.4" fill="white" opacity="0.95"/><circle cx="66.5" cy="34.5" r="1.4" fill="white" opacity="0.95"/>
+<path d="M27 27 Q36 23 45 27" stroke="#2a0800" stroke-width="3" fill="none" stroke-linecap="round"/>
+<path d="M55 23 Q64 18 73 27" stroke="#2a0800" stroke-width="3" fill="none" stroke-linecap="round"/>
+<path d="M46 43 L43 52 Q50 56 57 52 L54 43Z" fill="#5A2C10" opacity="0.65"/>
+<path d="M36 59 Q44 57 50 59 Q57 63 65 59" stroke="#5A2C10" stroke-width="2.5" fill="none" stroke-linecap="round"/>
 </svg>`;
 
 // ─────────────────────────────────────────────
-//  PLAYER CONFIG
+//  WRESTLER DEFINITIONS
 // ─────────────────────────────────────────────
-const PLAYERS = {
+const WRESTLERS = {
   randy: {
-    id:'randy', name:'Randy Orton', shortName:'RANDY',
-    svg:SVG_RANDY, cellClass:'randy-cell', winColor:'#ff4444',
-    quotes:['RKO OUTTA NOWHERE!','I HEAR VOICES IN MY HEAD!','THE LEGEND KILLER STRIKES!','PUNT KICK INCOMING!','VINTAGE ORTON!']
+    era:'current', name:'Randy Orton', shortName:'RANDY',
+    color:'#ff4444', colorRGB:'255,68,68', symbol:'RKO',
+    quotes:['RKO OUTTA NOWHERE!','I HEAR VOICES IN MY HEAD!','THE LEGEND KILLER!','VINTAGE ORTON!','PUNT KICK!'],
+    svg: SVG_RANDY
   },
   roman: {
-    id:'roman', name:'Roman Reigns', shortName:'ROMAN',
-    svg:SVG_ROMAN, cellClass:'roman-cell', winColor:'#3399ff',
-    quotes:['BELIEVE THAT!','ACKNOWLEDGE ME!','THE BIG DOG WINS!','SUPERMAN PUNCH!','THE TRIBAL CHIEF REIGNS!']
+    era:'current', name:'Roman Reigns', shortName:'ROMAN',
+    color:'#3399ff', colorRGB:'51,153,255', symbol:'SP',
+    quotes:['BELIEVE THAT!','ACKNOWLEDGE ME!','THE BIG DOG!','SUPERMAN PUNCH!','TRIBAL CHIEF!'],
+    svg: SVG_ROMAN
+  },
+  cena: {
+    era:'current', name:'John Cena', shortName:'CENA',
+    color:'#0066cc', colorRGB:'0,102,204', symbol:'5MJ',
+    quotes:["YOU CAN'T SEE ME!",'HUSTLE LOYALTY RESPECT!','THE CHAMP IS HERE!','NEVER GIVE UP!','ATTITUDE ADJUSTMENT!'],
+    svg: SVG_CENA
+  },
+  punk: {
+    era:'current', name:'CM Punk', shortName:'PUNK',
+    color:'#cccccc', colorRGB:'200,200,200', symbol:'GTS',
+    quotes:['BEST IN THE WORLD!','STRAIGHT EDGE!','GO TO SLEEP!','IT IS CLOBBERIN TIME!','PIPE BOMB DROPPED!'],
+    svg: SVG_PUNK
+  },
+  rock: {
+    era:'current', name:'The Rock', shortName:'THE ROCK',
+    color:'#cc8800', colorRGB:'204,136,0', symbol:"PPL'S",
+    quotes:["IF YA SMELLLL...",'KNOW YOUR ROLE!',"PEOPLE'S ELBOW!",'JUST BRING IT!','MOST ELECTRIFYING!'],
+    svg: SVG_ROCK
+  },
+  hogan: {
+    era:'classic', name:'Hulk Hogan', shortName:'HULK',
+    color:'#FFD700', colorRGB:'255,215,0', symbol:'HULK',
+    quotes:['WHATCHA GONNA DO?','BROTHER!','HULKAMANIA IS RUNNIN WILD!','24 INCH PYTHONS!','LET ME TELL YA SOMETHIN!'],
+    svg: SVG_HOGAN
+  },
+  warrior: {
+    era:'classic', name:'Ult. Warrior', shortName:'WARRIOR',
+    color:'#ff6600', colorRGB:'255,102,0', symbol:'UW',
+    quotes:['FEEL THE POWER!','ALWAYS BELIEVE!','THE WARRIORS NEVER DIE!','POWER AND INTENSITY!','SPEAK TO ME WARRIORS!'],
+    svg: SVG_WARRIOR
+  },
+  savage: {
+    era:'classic', name:'Macho Man', shortName:'MACHO',
+    color:'#9900cc', colorRGB:'153,0,204', symbol:'ELBOW',
+    quotes:['OOOH YEAH!','SNAP INTO IT!','THE CREAM RISES TO THE TOP!','DIG IT!','I AM THE MACHO MAN!'],
+    svg: SVG_SAVAGE
+  },
+  undertaker: {
+    era:'classic', name:'Undertaker', shortName:'TAKER',
+    color:'#9955ff', colorRGB:'153,85,255', symbol:'RIP',
+    quotes:['REST IN PEACE!','YOU WILL REST IN PEACE!','THE DEADMAN COMETH!','DARKNESS FALLS!','TOMBSTONE!'],
+    svg: SVG_UNDERTAKER
+  },
+  flair: {
+    era:'classic', name:'Ric Flair', shortName:'FLAIR',
+    color:'#aaaaff', colorRGB:'170,170,255', symbol:'WOOO',
+    quotes:['WOOOOO!','TO BE THE MAN...','STYLIN AND PROFILIN!','SLICK RIC!','NATURE BOY!'],
+    svg: SVG_FLAIR
   }
 };
 
@@ -638,9 +621,10 @@ const WIN_COMBOS = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4
 //  GAME STATE
 // ─────────────────────────────────────────────
 let boardState  = Array(9).fill(null);
-let currentTurn = 'randy';
+let currentTurn = 'player1';
 let gameOver    = false;
-let scores      = { randy:0, roman:0, draws:0 };
+let scores      = { player1:0, player2:0, draws:0 };
+let PLAYERS     = {};
 
 // ─────────────────────────────────────────────
 //  ONLINE STATE
@@ -649,14 +633,19 @@ let peer       = null;
 let conn       = null;
 let isOnline   = false;
 let isHost     = false;
-let myPlayer   = null;   // 'randy' | 'roman'
+let myPlayer   = null;
 let gameCode   = '';
 
 // ─────────────────────────────────────────────
-//  INIT PORTRAITS
+//  PICK STATE
 // ─────────────────────────────────────────────
-document.getElementById('portraitRandy').innerHTML = SVG_RANDY;
-document.getElementById('portraitRoman').innerHTML = SVG_ROMAN;
+let pickMode       = '';
+let pickStep       = 0;
+let chosenP1Key    = '';
+let chosenP2Key    = '';
+let selectedEra    = 'current';
+
+// init board clicks
 document.querySelectorAll('.cell').forEach(c => c.addEventListener('click', ()=>handleClick(+c.dataset.i)));
 
 // ─────────────────────────────────────────────
@@ -669,8 +658,8 @@ function showScreen(id) {
 
 function cancelAndBack() {
   destroyPeer();
-  isOnline = false; isHost = false; myPlayer = null; gameCode = '';
-  scores = {randy:0,roman:0,draws:0};
+  isOnline=false; isHost=false; myPlayer=null; gameCode='';
+  scores={player1:0,player2:0,draws:0};
   updateScores();
   resetBoardSilent();
   clearJoinInputs();
@@ -678,22 +667,114 @@ function cancelAndBack() {
 }
 
 function clearJoinInputs() {
-  document.querySelectorAll('.code-letter').forEach(i => { i.value=''; i.disabled=false; });
-  document.getElementById('joinStatus').textContent = '';
-  document.getElementById('joinBtn').disabled = true;
+  document.querySelectorAll('.code-letter').forEach(i=>{i.value='';i.disabled=false;});
+  document.getElementById('joinStatus').textContent='';
+  document.getElementById('joinBtn').disabled=true;
+}
+
+// ─────────────────────────────────────────────
+//  PICK SCREEN
+// ─────────────────────────────────────────────
+function goPickWrestler(mode) {
+  pickMode = mode;
+  pickStep = 0;
+  chosenP1Key = ''; chosenP2Key = '';
+  selectedEra = 'current';
+  document.querySelectorAll('.era-tab').forEach(t=>t.classList.toggle('active', t.dataset.era==='current'));
+  if (mode === 'local') {
+    document.getElementById('pickSubtitle').textContent = 'PLAYER 1: PICK YOUR WRESTLER!';
+    document.getElementById('pickStepRow').style.display = 'flex';
+    document.getElementById('stepP1').classList.add('active');
+    document.getElementById('stepP2').classList.remove('active');
+  } else if (mode === 'create') {
+    document.getElementById('pickSubtitle').textContent = 'YOUR WRESTLER (HOST)';
+    document.getElementById('pickStepRow').style.display = 'none';
+  } else {
+    document.getElementById('pickSubtitle').textContent = 'YOUR WRESTLER (GUEST)';
+    document.getElementById('pickStepRow').style.display = 'none';
+  }
+  renderWrestlerGrid();
+  showScreen('screenPick');
+}
+
+function setEra(era) {
+  selectedEra = era;
+  document.querySelectorAll('.era-tab').forEach(t=>t.classList.toggle('active', t.dataset.era===era));
+  renderWrestlerGrid();
+}
+
+function renderWrestlerGrid() {
+  const grid = document.getElementById('wrestlerGrid');
+  const list = Object.entries(WRESTLERS).filter(([,w])=>w.era===selectedEra);
+  const disabledKey = (pickMode==='local' && pickStep===1) ? chosenP1Key : '';
+  grid.innerHTML = list.map(([key,w])=>`
+    <div class="wrestler-card${key===disabledKey?' selected':''}" onclick="${key===disabledKey?'':'selectWrestler(\''+key+'\')'}" style="${key===disabledKey?'opacity:0.4;cursor:not-allowed;':''}">
+      <div class="wcard-portrait">${w.svg}</div>
+      <div class="wcard-name">${w.shortName}</div>
+    </div>`).join('');
+}
+
+function selectWrestler(key) {
+  if (pickMode === 'local') {
+    if (pickStep === 0) {
+      chosenP1Key = key;
+      pickStep = 1;
+      document.getElementById('pickSubtitle').textContent = 'PLAYER 2: PICK YOUR WRESTLER!';
+      document.getElementById('stepP1').classList.remove('active');
+      document.getElementById('stepP2').classList.add('active');
+      renderWrestlerGrid();
+    } else {
+      chosenP2Key = key;
+      buildPlayers(chosenP1Key, chosenP2Key);
+      startLocalGame();
+    }
+  } else if (pickMode === 'create') {
+    chosenP1Key = key;
+    showCreate();
+  } else {
+    chosenP2Key = key;
+    showJoin();
+  }
+}
+
+// ─────────────────────────────────────────────
+//  BUILD PLAYERS
+// ─────────────────────────────────────────────
+function buildPlayers(p1Key, p2Key) {
+  const w1 = WRESTLERS[p1Key];
+  const w2 = WRESTLERS[p2Key];
+  PLAYERS = {
+    player1: { ...w1, id:'player1', cellClass:'p1-cell' },
+    player2: { ...w2, id:'player2', cellClass:'p2-cell' }
+  };
+  // CSS variables for dynamic colours
+  const gs = document.getElementById('screenGame');
+  gs.style.setProperty('--p1-color', w1.color);
+  gs.style.setProperty('--p1-rgb',   w1.colorRGB);
+  gs.style.setProperty('--p2-color', w2.color);
+  gs.style.setProperty('--p2-rgb',   w2.colorRGB);
+  // Update UI elements
+  document.getElementById('portraitP1').innerHTML = w1.svg;
+  document.getElementById('portraitP2').innerHTML = w2.svg;
+  document.getElementById('p1Name').innerHTML = w1.name.replace(' ','<br>');
+  document.getElementById('p2Name').innerHTML = w2.name.replace(' ','<br>');
+  document.getElementById('p1Symbol').textContent = w1.symbol;
+  document.getElementById('p2Symbol').textContent = w2.symbol;
+  document.getElementById('sNameP1').textContent = w1.shortName;
+  document.getElementById('sNameP2').textContent = w2.shortName;
 }
 
 // ─────────────────────────────────────────────
 //  LOCAL MODE
 // ─────────────────────────────────────────────
-function startLocal() {
-  isOnline = false; myPlayer = null;
-  scores = {randy:0,roman:0,draws:0};
+function startLocalGame() {
+  isOnline=false; myPlayer=null;
+  scores={player1:0,player2:0,draws:0};
   updateScores();
   resetBoardSilent();
   document.getElementById('onlineBadge').classList.remove('show');
-  document.getElementById('youTagRandy').classList.remove('show');
-  document.getElementById('youTagRoman').classList.remove('show');
+  document.getElementById('youTagP1').classList.remove('show');
+  document.getElementById('youTagP2').classList.remove('show');
   showScreen('screenGame');
 }
 
@@ -701,69 +782,57 @@ function startLocal() {
 //  ONLINE — CREATE GAME
 // ─────────────────────────────────────────────
 function generateCode() {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  return Array.from({length:6}, ()=>chars[Math.floor(Math.random()*chars.length)]).join('');
+  const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  return Array.from({length:6},()=>chars[Math.floor(Math.random()*chars.length)]).join('');
 }
 
 function setCodeDisplay(code) {
-  for (let i=0;i<6;i++) {
-    const el = document.getElementById('cc'+i);
-    el.textContent = code[i] || '-';
-    el.classList.toggle('filled', !!code[i]);
+  for(let i=0;i<6;i++){
+    const el=document.getElementById('cc'+i);
+    el.textContent=code[i]||'-';
+    el.classList.toggle('filled',!!code[i]);
   }
 }
 
 function showCreate() {
   showScreen('screenCreate');
   setCodeDisplay('------');
-  document.getElementById('createStatus').textContent = '⏳ Getting your game code...';
+  document.getElementById('createStatus').textContent='⏳ Getting your game code...';
   document.getElementById('pulseRing').classList.add('show');
 
-  gameCode = generateCode();
-  const peerId = 'wwe-' + gameCode;
-
+  gameCode=generateCode();
   destroyPeer();
-  peer = new Peer(peerId, { debug: 0 });
+  peer=new Peer('wwe-'+gameCode,{debug:0});
 
-  peer.on('open', () => {
+  peer.on('open',()=>{
     setCodeDisplay(gameCode);
-    document.getElementById('createStatus').textContent = '⏳ Waiting for your friend to join...';
+    document.getElementById('createStatus').textContent='⏳ Waiting for your friend to join...';
   });
 
-  peer.on('connection', incoming => {
-    conn = incoming;
-    isHost   = true;
-    isOnline = true;
-    myPlayer = 'randy';
+  peer.on('connection',incoming=>{
+    conn=incoming;
+    isHost=true; isOnline=true; myPlayer='player1';
     setupConnection();
-    document.getElementById('createStatus').textContent = '✅ Friend connected! Starting...';
+    document.getElementById('createStatus').textContent='✅ Friend connected! Picking wrestlers...';
     document.getElementById('pulseRing').classList.remove('show');
-    setTimeout(launchOnlineGame, 700);
+    // Send our wrestler once connection is open
+    const doHello=()=>sendToOpponent({type:'hello',wrestler:chosenP1Key});
+    if(conn.open) doHello(); else conn.on('open',doHello);
   });
 
-  peer.on('error', err => {
-    // If ID taken, retry with new code
-    if (err.type === 'unavailable-id') {
-      gameCode = generateCode();
-      peer.destroy();
-      showCreate(); // retry
-    } else {
-      document.getElementById('createStatus').textContent = '❌ Network error. Check Wi-Fi and try again.';
-      document.getElementById('pulseRing').classList.remove('show');
-    }
+  peer.on('error',err=>{
+    if(err.type==='unavailable-id'){gameCode=generateCode();peer.destroy();showCreate();}
+    else{document.getElementById('createStatus').textContent='❌ Network error. Check Wi-Fi and try again.';document.getElementById('pulseRing').classList.remove('show');}
   });
 }
 
 function copyCode() {
-  if (!gameCode) return;
+  if(!gameCode) return;
   navigator.clipboard.writeText(gameCode).then(()=>{
-    const btn = document.querySelector('.copy-btn');
-    btn.textContent = '✅ COPIED!';
-    setTimeout(()=>{ btn.textContent = '📋 COPY CODE'; }, 1800);
-  }).catch(()=>{
-    // Fallback: show code in alert for manual copy
-    alert('Your game code is: ' + gameCode);
-  });
+    const btn=document.querySelector('.copy-btn');
+    btn.textContent='✅ COPIED!';
+    setTimeout(()=>{btn.textContent='📋 COPY CODE';},1800);
+  }).catch(()=>alert('Your game code is: '+gameCode));
 }
 
 // ─────────────────────────────────────────────
@@ -772,198 +841,189 @@ function copyCode() {
 function showJoin() {
   clearJoinInputs();
   showScreen('screenJoin');
-  setTimeout(()=>{ document.querySelector('.code-letter').focus(); }, 200);
+  setTimeout(()=>{document.querySelector('.code-letter').focus();},200);
 }
 
 function handleCodeInput(el) {
-  el.value = el.value.toUpperCase().replace(/[^A-Z2-9]/g,'');
-  const idx = +el.dataset.idx;
-  if (el.value && idx < 5) {
-    const inputs = document.querySelectorAll('.code-letter');
-    inputs[idx+1].focus();
-  }
+  el.value=el.value.toUpperCase().replace(/[^A-Z2-9]/g,'');
+  const idx=+el.dataset.idx;
+  if(el.value && idx<5) document.querySelectorAll('.code-letter')[idx+1].focus();
   checkJoinReady();
 }
 
-function handleCodeKey(e, el) {
-  if (e.key === 'Backspace' && !el.value) {
-    const idx = +el.dataset.idx;
-    if (idx > 0) {
-      const inputs = document.querySelectorAll('.code-letter');
-      inputs[idx-1].focus();
-      inputs[idx-1].value = '';
-    }
+function handleCodeKey(e,el) {
+  if(e.key==='Backspace'&&!el.value){
+    const idx=+el.dataset.idx;
+    if(idx>0){const inputs=document.querySelectorAll('.code-letter');inputs[idx-1].focus();inputs[idx-1].value='';}
   }
   checkJoinReady();
 }
 
 function checkJoinReady() {
-  const inputs = document.querySelectorAll('.code-letter');
-  const code = Array.from(inputs).map(i=>i.value).join('');
-  document.getElementById('joinBtn').disabled = code.length !== 6;
+  const code=Array.from(document.querySelectorAll('.code-letter')).map(i=>i.value).join('');
+  document.getElementById('joinBtn').disabled=code.length!==6;
 }
 
 function joinGame() {
-  const inputs  = document.querySelectorAll('.code-letter');
-  const code    = Array.from(inputs).map(i=>i.value.toUpperCase()).join('');
-  if (code.length !== 6) return;
-
-  document.getElementById('joinStatus').textContent = '🔗 Connecting...';
-  document.getElementById('joinBtn').disabled = true;
+  const inputs=document.querySelectorAll('.code-letter');
+  const code=Array.from(inputs).map(i=>i.value.toUpperCase()).join('');
+  if(code.length!==6) return;
+  document.getElementById('joinStatus').textContent='🔗 Connecting...';
+  document.getElementById('joinBtn').disabled=true;
   inputs.forEach(i=>i.disabled=true);
 
   destroyPeer();
-  peer = new Peer({ debug: 0 });
+  peer=new Peer({debug:0});
 
-  let timedOut = false;
-  const timeout = setTimeout(()=>{
-    timedOut = true;
-    document.getElementById('joinStatus').textContent = '⏰ Timed out. Check the code!';
-    document.getElementById('joinBtn').disabled = false;
-    inputs.forEach(i=>{ i.disabled=false; });
-  }, 12000);
+  let timedOut=false;
+  const timeout=setTimeout(()=>{
+    timedOut=true;
+    document.getElementById('joinStatus').textContent='⏰ Timed out. Check the code!';
+    document.getElementById('joinBtn').disabled=false;
+    inputs.forEach(i=>i.disabled=false);
+  },12000);
 
-  peer.on('open', () => {
-    conn = peer.connect('wwe-' + code, { reliable:true });
-
-    conn.on('open', ()=>{
-      if (timedOut) return;
+  peer.on('open',()=>{
+    conn=peer.connect('wwe-'+code,{reliable:true});
+    conn.on('open',()=>{
+      if(timedOut) return;
       clearTimeout(timeout);
-      isHost   = false;
-      isOnline = true;
-      myPlayer = 'roman';
+      isHost=false; isOnline=true; myPlayer='player2';
       setupConnection();
-      launchOnlineGame();
+      // Send our wrestler to host
+      sendToOpponent({type:'hello',wrestler:chosenP2Key});
+      document.getElementById('joinStatus').textContent='✅ Connected! Waiting for host...';
     });
-
-    conn.on('error', ()=>{
-      if (timedOut) return;
+    conn.on('error',()=>{
+      if(timedOut) return;
       clearTimeout(timeout);
-      document.getElementById('joinStatus').textContent = '❌ Could not connect. Check the code!';
-      document.getElementById('joinBtn').disabled = false;
-      inputs.forEach(i=>{ i.disabled=false; });
+      document.getElementById('joinStatus').textContent='❌ Could not connect. Check the code!';
+      document.getElementById('joinBtn').disabled=false;
+      inputs.forEach(i=>i.disabled=false);
     });
   });
 
-  peer.on('error', ()=>{
+  peer.on('error',()=>{
     clearTimeout(timeout);
-    document.getElementById('joinStatus').textContent = '❌ Network error. Check Wi-Fi!';
-    document.getElementById('joinBtn').disabled = false;
-    inputs.forEach(i=>{ i.disabled=false; });
+    document.getElementById('joinStatus').textContent='❌ Network error. Check Wi-Fi!';
+    document.getElementById('joinBtn').disabled=false;
+    inputs.forEach(i=>i.disabled=false);
   });
 }
 
 // ─────────────────────────────────────────────
-//  ONLINE — CONNECTION
+//  ONLINE — CONNECTION HANDLING
 // ─────────────────────────────────────────────
 function setupConnection() {
-  conn.on('data', handleRemoteData);
-  conn.on('close', ()=>{
+  conn.on('data',handleRemoteData);
+  conn.on('close',()=>{
     document.getElementById('connDot').classList.add('offline');
-    if (!gameOver) setStatus('😢 OPPONENT DISCONNECTED!');
+    if(!gameOver) setStatus('😢 OPPONENT DISCONNECTED!');
   });
-  conn.on('error', ()=>{
-    document.getElementById('connDot').classList.add('offline');
-  });
+  conn.on('error',()=>document.getElementById('connDot').classList.add('offline'));
 }
 
 function handleRemoteData(data) {
   switch(data.type) {
-    case 'move':      applyMove(data.cell, data.player); break;
-    case 'rematch':   doRematch();    break;
-    case 'new_series':doNewSeries();  break;
+    case 'hello':
+      // Wrestler exchange: now we know both wrestlers, build and launch
+      if(isHost) {
+        buildPlayers(chosenP1Key, data.wrestler);
+      } else {
+        buildPlayers(data.wrestler, chosenP2Key);
+      }
+      setTimeout(launchOnlineGame, 400);
+      break;
+    case 'move':
+      applyMove(data.cell, data.player);
+      break;
+    case 'rematch':
+      doRematch();
+      break;
+    case 'new_series':
+      doNewSeries();
+      break;
   }
 }
 
 function sendToOpponent(data) {
-  if (conn && conn.open) conn.send(data);
+  if(conn && conn.open) conn.send(data);
 }
 
 function destroyPeer() {
-  if (conn)  { try{conn.close();}catch(e){} conn=null; }
-  if (peer)  { try{peer.destroy();}catch(e){} peer=null; }
+  if(conn){try{conn.close();}catch(e){} conn=null;}
+  if(peer){try{peer.destroy();}catch(e){} peer=null;}
 }
 
 // ─────────────────────────────────────────────
 //  LAUNCH ONLINE GAME
 // ─────────────────────────────────────────────
 function launchOnlineGame() {
-  scores = {randy:0,roman:0,draws:0};
+  scores={player1:0,player2:0,draws:0};
   updateScores();
   resetBoardSilent();
 
-  // Online badge
-  const badge = document.getElementById('onlineBadge');
+  const badge=document.getElementById('onlineBadge');
   badge.classList.add('show');
   document.getElementById('connDot').classList.remove('offline');
-  if (myPlayer === 'randy') {
-    document.getElementById('onlineBadgeText').innerHTML = '🐍 YOU ARE <strong style="color:#ff4444">RANDY ORTON</strong>';
-    badge.style.borderColor = '#ff4444';
-    document.getElementById('youTagRandy').classList.add('show');
-    document.getElementById('youTagRoman').classList.remove('show');
-  } else {
-    document.getElementById('onlineBadgeText').innerHTML = '⚡ YOU ARE <strong style="color:#3399ff">ROMAN REIGNS</strong>';
-    badge.style.borderColor = '#3399ff';
-    document.getElementById('youTagRoman').classList.add('show');
-    document.getElementById('youTagRandy').classList.remove('show');
-  }
+
+  const myS=PLAYERS[myPlayer];
+  document.getElementById('onlineBadgeText').innerHTML=`⚡ YOU ARE <strong style="color:${myW.color}">${myW.name.toUpperCase()}</strong>`;
+  badge.style.borderColor=myW.color;
+
+  document.getElementById('youTagP1').classList.toggle('show', myPlayer==='player1');
+  document.getElementById('youTagP2').classList.toggle('show', myPlayer==='player2');
 
   showScreen('screenGame');
 }
 
 // ─────────────────────────────────────────────
-//  GAME LOGIC
+//  GAME LOGIC  — turn bug fixed: capture player before applyMove
 // ─────────────────────────────────────────────
 function handleClick(i) {
-  if (gameOver || boardState[i]) return;
-  // Online: only your turn
-  if (isOnline && currentTurn !== myPlayer) return;
+  if(gameOver || boardState[i]) return;
+  if(isOnline && currentTurn !== myPlayer) return;   // ← enforce your turn only
 
-  // Apply locally
-  applyMove(i, currentTurn);
-
-  // Tell opponent
-  if (isOnline) sendToOpponent({ type:'move', cell:i, player:currentTurn });
+  const movingPlayer = currentTurn;                  // capture BEFORE applyMove switches it
+  applyMove(i, movingPlayer);
+  if(isOnline) sendToOpponent({type:'move', cell:i, player:movingPlayer});
 }
 
 function applyMove(cell, player) {
-  boardState[cell] = player;
+  boardState[cell]=player;
   renderCell(cell);
-
-  const win = checkWin();
-  if (win) {
+  const win=checkWin();
+  if(win){
     markWinCells(win);
     scores[player]++;
     updateScores();
-    gameOver = true;
-    setTimeout(()=>showWinOverlay(player), 500);
+    gameOver=true;
+    setTimeout(()=>showWinOverlay(player),500);
     return;
   }
-  if (boardState.every(Boolean)) {
+  if(boardState.every(Boolean)){
     scores.draws++;
     updateScores();
-    gameOver = true;
+    gameOver=true;
     setStatus("🤝 IT'S A DRAW!");
     return;
   }
-  currentTurn = currentTurn === 'randy' ? 'roman' : 'randy';
+  currentTurn = currentTurn==='player1' ? 'player2' : 'player1';
   updateUI();
 }
 
 function checkWin() {
-  return WIN_COMBOS.find(([a,b,c]) =>
-    boardState[a] && boardState[a]===boardState[b] && boardState[b]===boardState[c]
-  ) || null;
+  return WIN_COMBOS.find(([a,b,c])=>boardState[a]&&boardState[a]===boardState[b]&&boardState[b]===boardState[c])||null;
 }
 
 // ─────────────────────────────────────────────
 //  RENDER
 // ─────────────────────────────────────────────
 function renderCell(i) {
-  const p    = PLAYERS[boardState[i]];
-  const cell = document.querySelector(`.cell[data-i="${i}"]`);
-  cell.classList.add('taken', p.cellClass);
-  cell.innerHTML = `<div class="tile-svg">${p.svg}</div>`;
+  const p=PLAYERS[boardState[i]];
+  const cell=document.querySelector(`.cell[data-i="${i}"]`);
+  cell.classList.add('taken',p.cellClass);
+  cell.innerHTML=`<div class="tile-svg">${p.svg}</div>`;
 }
 
 function markWinCells(combo) {
@@ -971,39 +1031,39 @@ function markWinCells(combo) {
 }
 
 function updateUI() {
-  const p = PLAYERS[currentTurn];
-  if (isOnline && currentTurn !== myPlayer) {
+  const p=PLAYERS[currentTurn];
+  if(isOnline && currentTurn!==myPlayer){
     setStatus('⏳ WAITING FOR OPPONENT...');
   } else {
-    setStatus(p.name.toUpperCase() + "'S MOVE!");
+    setStatus(p.name.toUpperCase()+"'S MOVE!");
   }
-  document.getElementById('cardRandy').classList.toggle('active-card', currentTurn==='randy');
-  document.getElementById('cardRoman').classList.toggle('active-card', currentTurn==='roman');
+  document.getElementById('cardP1').classList.toggle('active-card', currentTurn==='player1');
+  document.getElementById('cardP2').classList.toggle('active-card', currentTurn==='player2');
 }
 
-function setStatus(msg) { document.getElementById('statusMsg').textContent = msg; }
+function setStatus(msg){document.getElementById('statusMsg').textContent=msg;}
 
 function updateScores() {
-  document.getElementById('scoreRandy').textContent = scores.randy;
-  document.getElementById('scoreRoman').textContent = scores.roman;
-  document.getElementById('scoreDraws').textContent = scores.draws;
+  document.getElementById('scoreP1').textContent=scores.player1;
+  document.getElementById('scoreP2').textContent=scores.player2;
+  document.getElementById('scoreDraws').textContent=scores.draws;
 }
 
 // ─────────────────────────────────────────────
 //  WIN OVERLAY
 // ─────────────────────────────────────────────
 function showWinOverlay(winner) {
-  const p     = PLAYERS[winner];
-  const quote = p.quotes[Math.floor(Math.random()*p.quotes.length)];
-  document.getElementById('overlayPortrait').innerHTML = p.svg;
-  document.getElementById('overlayTitle').textContent  = p.shortName + ' WINS!';
-  document.getElementById('overlayTitle').style.color  = p.winColor;
-  document.getElementById('overlaySub').textContent    = quote;
+  const p=PLAYERS[winner];
+  const quote=p.quotes[Math.floor(Math.random()*p.quotes.length)];
+  document.getElementById('overlayPortrait').innerHTML=p.svg;
+  document.getElementById('overlayTitle').textContent=p.shortName+' WINS!';
+  document.getElementById('overlayTitle').style.color=p.color;
+  document.getElementById('overlaySub').textContent=quote;
   document.getElementById('overlay').classList.add('show');
-  spawnConfetti(p.winColor);
+  spawnConfetti(p.color);
 }
 
-function closeOverlay() {
+function closeOverlay(){
   document.getElementById('overlay').classList.remove('show');
   clearConfetti();
 }
@@ -1011,46 +1071,33 @@ function closeOverlay() {
 // ─────────────────────────────────────────────
 //  REMATCH / NEW SERIES
 // ─────────────────────────────────────────────
-function handleRematch() {
-  if (isOnline) sendToOpponent({ type:'rematch' });
-  doRematch();
-}
-function handleNewSeries() {
-  if (isOnline) sendToOpponent({ type:'new_series' });
-  doNewSeries();
-}
-function doRematch() {
-  closeOverlay();
-  resetBoardSilent();
-}
-function doNewSeries() {
-  closeOverlay();
-  scores = {randy:0,roman:0,draws:0};
-  updateScores();
-  resetBoardSilent();
-}
+function handleRematch(){if(isOnline) sendToOpponent({type:'rematch'}); doRematch();}
+function handleNewSeries(){if(isOnline) sendToOpponent({type:'new_series'}); doNewSeries();}
+function doRematch(){closeOverlay();resetBoardSilent();}
+function doNewSeries(){closeOverlay();scores={player1:0,player2:0,draws:0};updateScores();resetBoardSilent();}
+
 function resetBoardSilent() {
-  boardState  = Array(9).fill(null);
-  currentTurn = 'randy';
-  gameOver    = false;
-  document.querySelectorAll('.cell').forEach(c=>{ c.className='cell'; c.innerHTML=''; });
-  updateUI();
+  boardState=Array(9).fill(null);
+  currentTurn='player1';
+  gameOver=false;
+  document.querySelectorAll('.cell').forEach(c=>{c.className='cell';c.innerHTML='';});
+  if(Object.keys(PLAYERS).length) updateUI();
 }
 
 // ─────────────────────────────────────────────
 //  CONFETTI
 // ─────────────────────────────────────────────
-function spawnConfetti(mainColor) {
-  const wrap    = document.getElementById('confettiWrap');
-  const colours = [mainColor,'#ffd700','#ffffff','#ff8c00','#00ff99'];
-  for (let i=0;i<90;i++) {
-    const p = document.createElement('div');
-    p.className = 'confetti-piece';
-    p.style.cssText = `left:${Math.random()*100}%;background:${colours[~~(Math.random()*colours.length)]};width:${6+Math.random()*10}px;height:${6+Math.random()*10}px;border-radius:${Math.random()>.5?'50%':'2px'};animation-duration:${1.5+Math.random()*2}s;animation-delay:${Math.random()*.9}s;`;
+function spawnConfetti(mainColor){
+  const wrap=document.getElementById('confettiWrap');
+  const colours=[mainColor,'#ffd700','#ffffff','#ff8c00','#00ff99'];
+  for(let i=0;i<90;i++){
+    const p=document.createElement('div');
+    p.className='confetti-piece';
+    p.style.cssText=`left:${Math.random()*100}%;background:${colours[~~(Math.random()*colours.length)]};width:${6+Math.random()*10}px;height:${6+Math.random()*10}px;border-radius:${Math.random()>.5?'50%':'2px'};animation-duration:${1.5+Math.random()*2}s;animation-delay:${Math.random()*.9}s;`;
     wrap.appendChild(p);
   }
 }
-function clearConfetti() { document.getElementById('confettiWrap').innerHTML=''; }
+function clearConfetti(){document.getElementById('confettiWrap').innerHTML='';}
 </script>
 </body>
 </html>
