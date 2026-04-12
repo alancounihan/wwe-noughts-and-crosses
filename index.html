@@ -813,11 +813,9 @@ function showCreate() {
     conn=incoming;
     isHost=true; isOnline=true; myPlayer='player1';
     setupConnection();
-    document.getElementById('createStatus').textContent='✅ Friend connected! Picking wrestlers...';
+    document.getElementById('createStatus').textContent='✅ Friend connected! Waiting for wrestler pick...';
     document.getElementById('pulseRing').classList.remove('show');
-    // Send our wrestler once connection is open
-    const doHello=()=>sendToOpponent({type:'hello',wrestler:chosenP1Key});
-    if(conn.open) doHello(); else conn.on('open',doHello);
+    // Host waits for guest's 'hello', then replies with 'start' (see handleRemoteData)
   });
 
   peer.on('error',err=>{
@@ -926,12 +924,17 @@ function setupConnection() {
 function handleRemoteData(data) {
   switch(data.type) {
     case 'hello':
-      // Wrestler exchange: now we know both wrestlers, build and launch
+      // Guest → Host: guest sends their wrestler key.
+      // Host builds players, then sends 'start' back with both keys.
       if(isHost) {
         buildPlayers(chosenP1Key, data.wrestler);
-      } else {
-        buildPlayers(data.wrestler, chosenP2Key);
+        sendToOpponent({type:'start', p1: chosenP1Key, p2: data.wrestler});
+        setTimeout(launchOnlineGame, 400);
       }
+      break;
+    case 'start':
+      // Host → Guest: host sends both wrestler keys; guest builds and launches.
+      buildPlayers(data.p1, data.p2);
       setTimeout(launchOnlineGame, 400);
       break;
     case 'move':
