@@ -829,7 +829,7 @@ function showCreate() {
 
   peer.on('error',err=>{
     if(err.type==='unavailable-id'){gameCode=generateCode();peer.destroy();showCreate();}
-    else{document.getElementById('createStatus').textContent='❌ Network error. Check Wi-Fi and try again.';document.getElementById('pulseRing').classList.remove('show');}
+    else{document.getElementById('createStatus').textContent='⚠️ Connection error. Try creating a new game.';document.getElementById('pulseRing').classList.remove('show');}
   });
 }
 
@@ -885,10 +885,10 @@ function joinGame() {
   let timedOut=false;
   const timeout=setTimeout(()=>{
     timedOut=true;
-    document.getElementById('joinStatus').textContent='⏰ Timed out. Check the code!';
+    document.getElementById('joinStatus').textContent='⏰ Timed out. Check the code and try again!';
     document.getElementById('joinBtn').disabled=false;
     inputs.forEach(i=>i.disabled=false);
-  },12000);
+  },30000);
 
   peer.on('open',()=>{
     conn=peer.connect('wwe-'+code,{reliable:true});
@@ -911,7 +911,7 @@ function joinGame() {
 
   peer.on('error',()=>{
     clearTimeout(timeout);
-    document.getElementById('joinStatus').textContent='❌ Network error. Check Wi-Fi!';
+    document.getElementById('joinStatus').textContent='⚠️ Connection error. Check the code and try again!';
     document.getElementById('joinBtn').disabled=false;
     inputs.forEach(i=>i.disabled=false);
   });
